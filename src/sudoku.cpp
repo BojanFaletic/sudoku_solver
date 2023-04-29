@@ -6,7 +6,7 @@
 namespace sud
 {
 
-    void initBoard(sudoku_t &board)
+    void init_board(sudoku_t &board)
     {
         for (auto &row : board)
         {
@@ -17,7 +17,7 @@ namespace sud
         }
     }
 
-    unique_t missing_items_X_dir(sudoku_t &sud, int row)
+    unique_t missing_items_X_dir(sudoku_t &sud, square_t row)
     {
         unique_t result{false};
         for_each(sud[row].begin(), sud[row].end(), [&result](uint8_t &item)
@@ -25,15 +25,15 @@ namespace sud
         return result;
     }
 
-    unique_t missing_items_Y_dir(sudoku_t &sud, int col)
+    unique_t missing_items_Y_dir(sudoku_t &sud, square_t col)
     {
         unique_t result{false};
-        for_each(sud.begin(), sud.end(), [&result, col](array<uint8_t, 9> &row)
+        for_each(sud.begin(), sud.end(), [&result, col](const array<uint8_t, SUDOKU_SIZE> &row)
                  { result[row[col]] |= true; });
         return result;
     }
 
-    unique_t missing_items_box(sudoku_t &sud, int row, int col)
+    unique_t missing_items_box(sudoku_t &sud, square_t row, square_t col)
     {
         unique_t result{false};
         const int box_row = (row / SUDOKU_BOX_SIZE) * SUDOKU_BOX_SIZE;
@@ -48,7 +48,7 @@ namespace sud
         return result;
     }
 
-    missing_t possible_items(sudoku_t &sud, int row, int col)
+    missing_t possible_items(sudoku_t &sud, square_t row, square_t col)
     {
         const unique_t missing_X = missing_items_X_dir(sud, row);
         const unique_t missing_Y = missing_items_Y_dir(sud, col);
@@ -68,7 +68,7 @@ namespace sud
         {
             for (int col = 0; col < SUDOKU_SIZE; col++)
             {
-                // missing_t test = possible_items(sud, row, col);
+                result[row][col] = possible_items(sud, row, col);
             }
         }
         return result;
@@ -76,7 +76,7 @@ namespace sud
 
     Sudoku::Sudoku()
     {
-        initBoard(board);
+        init_board(board);
     }
 
     ostream &operator<<(ostream &os, const Sudoku &sudoku)

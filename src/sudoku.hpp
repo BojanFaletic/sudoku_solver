@@ -40,8 +40,8 @@ namespace sud
     // boolean array of size 9x9 indicating which numbers are missing
     using missing_full_t = array<array<missing_t, SUDOKU_SIZE>, SUDOKU_SIZE>;
 
-    void initBoard(sudoku_t &board);
-    missing_t possible_items(sudoku_t &sud, int row, int col);
+    void init_board(sudoku_t &board);
+    missing_t possible_items(sudoku_t &sud, square_t row, square_t col);
     missing_full_t possible_items_full(sudoku_t &sud);
 
     class Sudoku

@@ -10,7 +10,7 @@ using namespace sud;
 
 TEST(Primitives, possible_items){
     sudoku_t sud;
-    initBoard(sud);
+    init_board(sud);
 
     missing_t result = possible_items(sud, 0, 0);
     missing_t expected{true, true, true, true, true, true, true, true, true};
