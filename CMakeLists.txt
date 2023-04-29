@@ -11,6 +11,11 @@ include_directories(src)
 # include test directory
 add_subdirectory(tests)
 
+# include .csv file
+set(SAMPLE_CSV ${CMAKE_SOURCE_DIR}/sample.csv)
+# Copy the sample.csv file to the build directory
+configure_file(${SAMPLE_CSV} ${CMAKE_CURRENT_BINARY_DIR}/sample.csv COPYONLY)
+
 # mark all .cpp files to be compiled
 set(SOURCES "main.cpp")
 aux_source_directory(src SOURCES)

@@ -8,6 +8,7 @@ using namespace sud;
 int main()
 {
     Sudoku sudoku;
+    sudoku.load_from_CSV("sample.csv");
     cout << sudoku << endl;
     
     //initBoard(sudoku.board);

@@ -52,6 +52,7 @@ namespace sud
     public:
         Sudoku();
 
+        bool load_from_CSV(const string filename);
         friend ostream &operator<<(ostream &os, const Sudoku &sudoku);
     };
 
