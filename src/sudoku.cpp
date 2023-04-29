@@ -5,6 +5,10 @@
 #include <fstream>
 #include <sstream>
 
+#include <boost/tokenizer.hpp>
+
+using namespace boost;
+
 namespace sud
 {
 
@@ -58,7 +62,10 @@ namespace sud
         missing_t result;
         for (uint8_t i = 1; i < SUDOKU_POSSIBLE_NUMBERS; i++)
         {
-            result[i - 1] = !(missing_X[i] || missing_Y[i] || missing_box[i]);
+            if (!(missing_X[i] || missing_Y[i] || missing_box[i]))
+            {
+                result.push_back(i);
+            }
         }
         return result;
     }
@@ -76,30 +83,99 @@ namespace sud
         return result;
     }
 
-    bool Sudoku::load_from_CSV(const string filename)
+    void Sudoku::load_from_CSV(const std::string filename)
     {
         ifstream file(filename);
         if (!file.is_open())
         {
-            return false;
+            throw std::runtime_error("Could not open file");
         }
-        string line;
+        std::string line;
         square_t row = 0;
         while (getline(file, line))
         {
-            square_t col = 0;
-            stringstream ss(line);
-            string cell;
-            while (getline(ss, cell, '	'))
+            if (row >= SUDOKU_SIZE)
             {
-                board[row][col] = stoi(cell);
+                throw std::runtime_error("Too many rows");
+            }
+
+            tokenizer<char_separator<char>> tokenizer(line, char_separator<char>("\t"));
+            square_t col = 0;
+            for (const auto &token : tokenizer)
+            {
+                if (col >= SUDOKU_SIZE)
+                {
+                    throw std::runtime_error("Too many columns");
+                }
+                if (token == "")
+                {
+                    continue;
+                }
+                uint8_t value = stoi(token);
+                if (value >= SUDOKU_POSSIBLE_NUMBERS)
+                {
+                    throw std::runtime_error("Invalid value");
+                }
+                board[row][col] = value;
                 col++;
+            }
+
+            if (col != SUDOKU_SIZE)
+            {
+                throw std::runtime_error("Too few columns");
             }
             row++;
         }
-        return true;
     }
 
+    bool simple_solve(sudoku_t &sud)
+    {
+        static_vector<sudoku_item_t, SUDOKU_SIZE * SUDOKU_SIZE> missing_items;
+        // find missing items
+        for (square_t row = 0; row < SUDOKU_SIZE; row++)
+        {
+            for (square_t col = 0; col < SUDOKU_SIZE; col++)
+            {
+                if (sud[row][col] == 0)
+                {
+                    missing_t missing = possible_items(sud, row, col);
+                    missing_items.push_back({row, col, missing});
+                }
+            }
+        }
+
+        // try to solve
+        size_t missing_items_size = missing_items.size();
+        size_t missing_items_size_prev = 0;
+        while (missing_items_size != missing_items_size_prev)
+        {
+            // sort missing items by number of possibilities (descending)
+            sort(missing_items.begin(), missing_items.end(), [](const sudoku_item_t &a, const sudoku_item_t &b)
+                 { return a.candidates.size() > b.candidates.size(); });
+
+            // try to solve
+            for (size_t i = missing_items.size() - 1; i >= 0; i--)
+            {
+                const square_t row = missing_items[i].row;
+                const square_t col = missing_items[i].col;
+                const missing_t &missing = missing_items[i].candidates;
+                if (missing.size() == 1)
+                {
+                    sud[row][col] = missing[0];
+                    missing_items.pop_back();
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            // update missing items
+            missing_items_size_prev = missing_items_size;
+            missing_items_size = missing_items.size();
+        }
+        return missing_items_size == 0;
+    }
 
     Sudoku::Sudoku()
     {

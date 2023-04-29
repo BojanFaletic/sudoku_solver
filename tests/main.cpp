@@ -13,15 +13,13 @@ TEST(Primitives, possible_items){
     init_board(sud);
 
     missing_t result = possible_items(sud, 0, 0);
-    missing_t expected{true, true, true, true, true, true, true, true, true};
-
-    ASSERT_EQ(result, expected);
+    missing_t expected = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+    EXPECT_EQ(result, expected);
 
     sud[0][0] = 1;
     result = possible_items(sud, 0, 0);
-    expected[0] = false;
-
-    ASSERT_EQ(result, expected);
+    expected = {2, 3, 4, 5, 6, 7, 8, 9};
+    EXPECT_EQ(result, expected);
 }
 
 
