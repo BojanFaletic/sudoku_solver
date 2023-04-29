@@ -53,22 +53,19 @@ namespace sud
     /*-----------------*/
     /* -- functions -- */
     /* -----------------*/
-
-    void init_board(sudoku_t &board);
-    missing_t possible_items(sudoku_t &sud, square_t row, square_t col);
-    missing_full_t possible_items_full(sudoku_t &sud);
-    bool simple_solve(sudoku_t &sud);
-
     class Sudoku
     {
     private:
-        
-    public:
         sudoku_t board;
 
-        Sudoku();
-
         void load_from_CSV(const string filename);
+        missing_t possible_items(const square_t row, const square_t col);
+    public:
+
+        Sudoku();
+        Sudoku(const string filename);
+
+        bool solve();
         friend ostream &operator<<(ostream &os, const Sudoku &sudoku);
     };
 

@@ -7,12 +7,11 @@ using namespace sud;
 
 int main()
 {
-    Sudoku sudoku;
-    sudoku.load_from_CSV("sample.csv");
+    Sudoku sudoku{"sample.csv"};
     cout << sudoku << endl;
 
     cout << "Solving..." << endl;
-    simple_solve(sudoku.board);
+    sudoku.solve();
     cout << sudoku << endl;
     
     //initBoard(sudoku.board);

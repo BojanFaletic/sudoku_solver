@@ -12,7 +12,7 @@ using namespace boost;
 namespace sud
 {
 
-    void init_board(sudoku_t &board)
+    Sudoku::Sudoku()
     {
         for (auto &row : board)
         {
@@ -23,67 +23,7 @@ namespace sud
         }
     }
 
-    unique_t missing_items_X_dir(sudoku_t &sud, square_t row)
-    {
-        unique_t result{false};
-        for_each(sud[row].begin(), sud[row].end(), [&result](uint8_t &item)
-                 { result[item] |= true; });
-        return result;
-    }
-
-    unique_t missing_items_Y_dir(sudoku_t &sud, square_t col)
-    {
-        unique_t result{false};
-        for_each(sud.begin(), sud.end(), [&result, col](const array<uint8_t, SUDOKU_SIZE> &row)
-                 { result[row[col]] |= true; });
-        return result;
-    }
-
-    unique_t missing_items_box(sudoku_t &sud, square_t row, square_t col)
-    {
-        unique_t result{false};
-        const square_t box_row = (row / SUDOKU_BOX_SIZE) * SUDOKU_BOX_SIZE;
-        const square_t box_col = (col / SUDOKU_BOX_SIZE) * SUDOKU_BOX_SIZE;
-        for (square_t r = box_row; r < box_row + SUDOKU_BOX_SIZE; r++)
-        {
-            for (square_t c = box_col; c < box_col + SUDOKU_BOX_SIZE; c++)
-            {
-                result[sud[r][c]] |= true;
-            }
-        }
-        return result;
-    }
-
-    missing_t possible_items(sudoku_t &sud, square_t row, square_t col)
-    {
-        const unique_t missing_X = missing_items_X_dir(sud, row);
-        const unique_t missing_Y = missing_items_Y_dir(sud, col);
-        const unique_t missing_box = missing_items_box(sud, row, col);
-        missing_t result;
-        for (uint8_t i = 1; i < SUDOKU_POSSIBLE_NUMBERS; i++)
-        {
-            if (!(missing_X[i] || missing_Y[i] || missing_box[i]))
-            {
-                result.push_back(i);
-            }
-        }
-        return result;
-    }
-
-    missing_full_t possible_items_full(sudoku_t &sud)
-    {
-        missing_full_t result;
-        for (square_t row = 0; row < SUDOKU_SIZE; row++)
-        {
-            for (square_t col = 0; col < SUDOKU_SIZE; col++)
-            {
-                result[row][col] = possible_items(sud, row, col);
-            }
-        }
-        return result;
-    }
-
-    void Sudoku::load_from_CSV(const std::string filename)
+    Sudoku::Sudoku(const string filename)
     {
         ifstream file(filename);
         if (!file.is_open())
@@ -128,7 +68,54 @@ namespace sud
         }
     }
 
-    bool simple_solve(sudoku_t &sud)
+    unique_t missing_items_X_dir(sudoku_t &sud, square_t row)
+    {
+        unique_t result{false};
+        for_each(sud[row].begin(), sud[row].end(), [&result](uint8_t &item)
+                 { result[item] |= true; });
+        return result;
+    }
+
+    unique_t missing_items_Y_dir(sudoku_t &sud, square_t col)
+    {
+        unique_t result{false};
+        for_each(sud.begin(), sud.end(), [&result, col](const array<uint8_t, SUDOKU_SIZE> &row)
+                 { result[row[col]] |= true; });
+        return result;
+    }
+
+    unique_t missing_items_box(sudoku_t &sud, square_t row, square_t col)
+    {
+        unique_t result{false};
+        const square_t box_row = (row / SUDOKU_BOX_SIZE) * SUDOKU_BOX_SIZE;
+        const square_t box_col = (col / SUDOKU_BOX_SIZE) * SUDOKU_BOX_SIZE;
+        for (square_t r = box_row; r < box_row + SUDOKU_BOX_SIZE; r++)
+        {
+            for (square_t c = box_col; c < box_col + SUDOKU_BOX_SIZE; c++)
+            {
+                result[sud[r][c]] |= true;
+            }
+        }
+        return result;
+    }
+
+    missing_t Sudoku::possible_items(const square_t row, const square_t col)
+    {
+        const unique_t missing_X = missing_items_X_dir(board, row);
+        const unique_t missing_Y = missing_items_Y_dir(board, col);
+        const unique_t missing_box = missing_items_box(board, row, col);
+        missing_t result;
+        for (uint8_t i = 1; i < SUDOKU_POSSIBLE_NUMBERS; i++)
+        {
+            if (!(missing_X[i] || missing_Y[i] || missing_box[i]))
+            {
+                result.push_back(i);
+            }
+        }
+        return result;
+    }
+
+    bool Sudoku::solve()
     {
         static_vector<sudoku_item_t, SUDOKU_SIZE * SUDOKU_SIZE> missing_items;
         // find missing items
@@ -136,9 +123,9 @@ namespace sud
         {
             for (square_t col = 0; col < SUDOKU_SIZE; col++)
             {
-                if (sud[row][col] == 0)
+                if (board[row][col] == 0)
                 {
-                    missing_t missing = possible_items(sud, row, col);
+                    missing_t missing = possible_items(row, col);
                     missing_items.push_back({row, col, missing});
                 }
             }
@@ -161,7 +148,7 @@ namespace sud
                 const missing_t &missing = missing_items[i].candidates;
                 if (missing.size() == 1)
                 {
-                    sud[row][col] = missing[0];
+                    board[row][col] = missing[0];
                     missing_items.pop_back();
                 }
                 else
@@ -175,11 +162,6 @@ namespace sud
             missing_items_size = missing_items.size();
         }
         return missing_items_size == 0;
-    }
-
-    Sudoku::Sudoku()
-    {
-        init_board(board);
     }
 
     ostream &operator<<(ostream &os, const Sudoku &sudoku)
