@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 project(sudoku VERSION 0.1.0)
 
 find_package(Boost REQUIRED COMPONENTS container)
-
+find_package(fmt CONFIG REQUIRED)
 
 include_directories(src)
 
@@ -29,4 +29,5 @@ aux_source_directory(src SOURCES)
 add_executable(sudoku ${SOURCES})
 
 # link boost
-target_link_libraries(sudoku Boost::container)
+target_link_libraries(sudoku PRIVATE Boost::container)
+target_link_libraries(sudoku PRIVATE fmt::fmt)

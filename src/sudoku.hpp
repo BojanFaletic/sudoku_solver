@@ -1,5 +1,6 @@
 #pragma once
 
+#include <errno.h>
 #include <array>
 #include <cstdint>
 #include <ostream>
@@ -23,6 +24,10 @@ namespace sud
     // number of numbers in the sudoku board
     const size_t SUDOKU_POSSIBLE_NUMBERS = 10;
 
+    /* Error codes */
+    const int SUDOKU_ERROR = -1;
+    const int SUDOKU_OK = 0;
+
     /*-----------------*/
     /* -- typedefs -- */
     /* -----------------*/
@@ -42,13 +47,13 @@ namespace sud
     // boolean array of size 9x9 indicating which numbers are missing
     using missing_full_t = array<array<missing_t, SUDOKU_SIZE>, SUDOKU_SIZE>;
 
-    // item of the sudoku board
-    typedef struct
+    struct Point
     {
         square_t row;
         square_t col;
-        missing_t candidates;
-    } sudoku_item_t;
+    };
+
+    using solve_candidates_t = std::array<std::array<missing_t, SUDOKU_SIZE>, SUDOKU_SIZE>;
 
     /*-----------------*/
     /* -- functions -- */
@@ -60,8 +65,8 @@ namespace sud
 
         void load_from_CSV(const string filename);
         missing_t possible_items(const square_t row, const square_t col);
-    public:
 
+    public:
         Sudoku();
         Sudoku(const string filename);
 

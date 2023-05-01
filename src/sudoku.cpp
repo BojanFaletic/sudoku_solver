@@ -6,6 +6,10 @@
 #include <sstream>
 
 #include <boost/tokenizer.hpp>
+#include <iostream>
+#include <map>
+
+#include <fmt/core.h>
 
 using namespace boost;
 
@@ -117,7 +121,8 @@ namespace sud
 
     bool Sudoku::solve()
     {
-        static_vector<sudoku_item_t, SUDOKU_SIZE * SUDOKU_SIZE> missing_items;
+        solve_candidates_t solve_candidates;
+        uint8_t n_unsolved = 0;
         // find missing items
         for (square_t row = 0; row < SUDOKU_SIZE; row++)
         {
@@ -125,44 +130,52 @@ namespace sud
             {
                 if (board[row][col] == 0)
                 {
-                    missing_t missing = possible_items(row, col);
-                    missing_items.push_back({row, col, missing});
+                    solve_candidates[row][col]= possible_items(row, col);
+                    n_unsolved++;
                 }
             }
         }
 
         // try to solve
-        size_t missing_items_size = missing_items.size();
-        size_t missing_items_size_prev = 0;
-        while (missing_items_size != missing_items_size_prev)
+        uint8_t n_unsolved_prev = 0;
+        while (n_unsolved > 0 && n_unsolved != n_unsolved_prev)
         {
-            // sort missing items by number of possibilities (descending)
-            sort(missing_items.begin(), missing_items.end(), [](const sudoku_item_t &a, const sudoku_item_t &b)
-                 { return a.candidates.size() > b.candidates.size(); });
-
-            // try to solve
-            for (size_t i = missing_items.size() - 1; i >= 0; i--)
+            n_unsolved_prev = n_unsolved;
+            for (square_t row = 0; row < SUDOKU_SIZE; row++)
             {
-                const square_t row = missing_items[i].row;
-                const square_t col = missing_items[i].col;
-                const missing_t &missing = missing_items[i].candidates;
-                if (missing.size() == 1)
+                for (square_t col = 0; col < SUDOKU_SIZE; col++)
                 {
-                    board[row][col] = missing[0];
-                    missing_items.pop_back();
-                }
-                else
-                {
-                    break;
+                    if (board[row][col] == 0)
+                    {
+                        const missing_t &missing = solve_candidates[row][col];
+                        if (missing.size() == 1)
+                        {
+                            std::cout << fmt::format("Solved {} {} = {}\n", row, col, missing[0]);
+
+                            board[row][col] = missing[0];
+                            solve_candidates[row][col].clear();
+                            n_unsolved--;
+                        }
+                    }
                 }
             }
-
-            // update missing items
-            missing_items_size_prev = missing_items_size;
-            missing_items_size = missing_items.size();
         }
-        return missing_items_size == 0;
+        return n_unsolved == 0;
     }
+
+    missing_t to_number(const unique_t &unique)
+    {
+        missing_t result;
+        for (uint8_t i = 1; i < SUDOKU_POSSIBLE_NUMBERS; i++)
+        {
+            if (unique[i])
+            {
+                result.push_back(i);
+            }
+        }
+        return result;
+    }
+
 
     ostream &operator<<(ostream &os, const Sudoku &sudoku)
     {
