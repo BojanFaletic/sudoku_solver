@@ -73,7 +73,6 @@ namespace sud
         Sudoku();
         Sudoku(const string filename);
 
-
         bool save_to_CSV(const string filename);
 
         bool solve();
@@ -82,7 +81,7 @@ namespace sud
         square_t get(const square_t row, const square_t col) const;
         void set(const square_t row, const square_t col, const square_t value);
         missing_t possible_items(const square_t row, const square_t col) const;
-        
+
         friend ostream &operator<<(ostream &os, const Sudoku &sudoku);
     };
 

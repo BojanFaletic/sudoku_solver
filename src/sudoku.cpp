@@ -299,10 +299,12 @@ namespace sud
         uint8_t n_unsolved_old = 0;
         uint8_t n_unsolved = count_missing(*this);
         uint8_t n_unsolved_origin = n_unsolved;
-        solve_candidates_t solve_candidates = check_missing(*this);
 
         while (n_unsolved_old != n_unsolved)
         {
+            n_unsolved_old = n_unsolved;
+            solve_candidates_t solve_candidates = check_missing(*this);
+
             for (square_t row = 0; row < SUDOKU_SIZE; row++)
             {
                 while (solve_X_dir(board, row, solve_candidates))
@@ -310,8 +312,6 @@ namespace sud
                     n_unsolved--;
                 }
             }
-            n_unsolved_old = n_unsolved;
-            solve_candidates = check_missing(*this);
         }
         return n_unsolved_origin < n_unsolved;
     }
@@ -321,10 +321,12 @@ namespace sud
         uint8_t n_unsolved_old = 0;
         uint8_t n_unsolved = count_missing(*this);
         uint8_t n_unsolved_origin = n_unsolved;
-        solve_candidates_t solve_candidates = check_missing(*this);
 
         while (n_unsolved_old != n_unsolved)
         {
+            n_unsolved_old = n_unsolved;
+            solve_candidates_t solve_candidates = check_missing(*this);
+
             for (square_t col = 0; col < SUDOKU_SIZE; col++)
             {
                 while (solve_Y_dir(board, col, solve_candidates))
@@ -332,8 +334,6 @@ namespace sud
                     n_unsolved--;
                 }
             }
-            n_unsolved_old = n_unsolved;
-            solve_candidates = check_missing(*this);
         }
         return n_unsolved_origin < n_unsolved;
     }
@@ -342,11 +342,13 @@ namespace sud
     {
         uint8_t n_unsolved_old = 0;
         uint8_t n_unsolved = count_missing(*this);
-        uint8_t n_unsolved_origin = n_unsolved;
-        solve_candidates_t solve_candidates = check_missing(*this);
+        const uint8_t n_unsolved_origin = n_unsolved;
 
         while (n_unsolved_old != n_unsolved)
         {
+            n_unsolved_old = n_unsolved;
+            solve_candidates_t solve_candidates = check_missing(*this);
+
             for (square_t row = 0; row < SUDOKU_SIZE; row++)
             {
                 for (square_t col = 0; col < SUDOKU_SIZE; col++)
@@ -357,32 +359,15 @@ namespace sud
                     }
                 }
             }
-            n_unsolved_old = n_unsolved;
-            solve_candidates = check_missing(*this);
         }
         return n_unsolved_origin < n_unsolved;
     }
 
     bool Sudoku::solve()
     {
-        bool updated = true;
-
-        while (updated)
-        {
-            auto solve_candidates = check_missing(*this);
-            updated = false;
-            for (square_t row = 0; row < SUDOKU_SIZE; row += SUDOKU_BOX_SIZE)
-            {
-                for (square_t col = 0; col < SUDOKU_SIZE; col += SUDOKU_BOX_SIZE)
-                {
-                    while (solve_box(board, row, col, solve_candidates))
-                    {
-                        updated = true;
-                    }
-                }
-            }
-        }
-        return 0 == 0;
+        while (row_solver() || col_solver() || box_solver())
+            ;
+        return count_missing(*this) == 0;
     }
 
     missing_t to_number(const unique_t &unique)
