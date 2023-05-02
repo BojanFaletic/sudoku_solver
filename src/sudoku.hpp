@@ -70,7 +70,12 @@ namespace sud
         Sudoku();
         Sudoku(const string filename);
 
+
+        bool save_to_CSV(const string filename);
+
         bool solve();
+        bool check();
+        
         friend ostream &operator<<(ostream &os, const Sudoku &sudoku);
     };
 

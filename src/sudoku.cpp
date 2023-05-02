@@ -8,6 +8,7 @@
 #include <boost/tokenizer.hpp>
 #include <iostream>
 #include <map>
+#include <set>
 
 #include <fmt/core.h>
 
@@ -70,6 +71,9 @@ namespace sud
             }
             row++;
         }
+        if (!check()){
+            throw std::runtime_error("Invalid sudoku");
+        }
     }
 
     unique_t missing_items_X_dir(sudoku_t &sud, square_t row)
@@ -119,6 +123,152 @@ namespace sud
         return result;
     }
 
+    void erase_missing_Y_dir(missing_full_t &missing, square_t col, uint8_t value)
+    {
+        for (square_t row = 0; row < SUDOKU_SIZE; row++)
+        {
+            auto el = std::find(missing[row][col].begin(), missing[row][col].end(), value);
+            if (el != missing[row][col].end())
+            {
+                missing[row][col].erase(el);
+            }
+        }
+    }
+
+    void erase_missing_X_dir(missing_full_t &missing, square_t row, uint8_t value)
+    {
+        for (square_t col = 0; col < SUDOKU_SIZE; col++)
+        {
+            auto el = std::find(missing[row][col].begin(), missing[row][col].end(), value);
+            if (el != missing[row][col].end())
+            {
+                missing[row][col].erase(el);
+            }
+        }
+    }
+
+    void erase_missing_box(missing_full_t &missing, square_t row, square_t col, uint8_t value)
+    {
+        const square_t box_row = (row / SUDOKU_BOX_SIZE) * SUDOKU_BOX_SIZE;
+        const square_t box_col = (col / SUDOKU_BOX_SIZE) * SUDOKU_BOX_SIZE;
+        for (square_t r = box_row; r < box_row + SUDOKU_BOX_SIZE; r++)
+        {
+            for (square_t c = box_col; c < box_col + SUDOKU_BOX_SIZE; c++)
+            {
+                auto el = std::find(missing[r][c].begin(), missing[r][c].end(), value);
+                if (el != missing[r][c].end())
+                {
+                    missing[r][c].erase(el);
+                }
+            }
+        }
+    }
+
+    bool solve_X_dir(sudoku_t &sud, square_t row, missing_full_t &missing)
+    {
+        std::array<std::pair<uint8_t, square_t>, SUDOKU_POSSIBLE_NUMBERS> hist;
+        for_each(hist.begin(), hist.end(), [](std::pair<uint8_t, square_t> &item)
+                 { item.first = 0; });
+
+        bool result = false;
+        for (square_t col = 0; col < SUDOKU_SIZE; col++)
+        {
+            if (sud[row][col] == 0)
+            {
+                for (const auto &item : missing[row][col])
+                {
+                    std::cout << fmt::format("Item {} in ({}, {})\n", item, row, col);
+                    hist[item].first++;
+                    hist[item].second = col;
+                }
+            }
+        }
+
+        for (uint8_t i = 1; i < SUDOKU_POSSIBLE_NUMBERS; i++)
+        {
+            if (hist[i].first == 1)
+            {
+                std::cout << fmt::format("Inserting {} in ({}, {})\n", i, row, hist[i].second);
+                sud[row][hist[i].second] = i;
+                missing[row][hist[i].second].clear();
+                erase_missing_X_dir(missing, row, i);
+                result = true;
+            }
+        }
+        return result;
+    }
+
+    bool solve_Y_dir(sudoku_t &sud, square_t col, missing_full_t &missing)
+    {
+        std::array<std::pair<uint8_t, square_t>, SUDOKU_POSSIBLE_NUMBERS> hist;
+        for_each(hist.begin(), hist.end(), [](std::pair<uint8_t, square_t> &item)
+                 { item.first = 0; });
+
+        bool result = false;
+        for (square_t row = 0; row < SUDOKU_SIZE; row++)
+        {
+            if (sud[row][col] == 0)
+            {
+                for (const auto &item : missing[row][col])
+                {
+                    hist[item].first++;
+                    hist[item].second = row;
+                }
+            }
+        }
+
+        for (uint8_t i = 1; i < SUDOKU_POSSIBLE_NUMBERS; i++)
+        {
+            if (hist[i].first == 1)
+            {
+                sud[hist[i].second][col] = i;
+                missing[hist[i].second][col].clear();
+                erase_missing_Y_dir(missing, col, i);
+                result = true;
+            }
+        }
+        return result;
+    }
+
+    bool solve_box(sudoku_t &sud, square_t row, square_t col, missing_full_t &missing)
+    {
+        std::array<std::pair<uint8_t, Point>, SUDOKU_POSSIBLE_NUMBERS> hist;
+        for_each(hist.begin(), hist.end(), [](std::pair<uint8_t, Point> &item)
+                 { item.first = 0; });
+
+        bool result = false;
+        const square_t box_row = (row / SUDOKU_BOX_SIZE) * SUDOKU_BOX_SIZE;
+        const square_t box_col = (col / SUDOKU_BOX_SIZE) * SUDOKU_BOX_SIZE;
+
+        for (square_t r = box_row; r < box_row + SUDOKU_BOX_SIZE; r++)
+        {
+            for (square_t c = box_col; c < box_col + SUDOKU_BOX_SIZE; c++)
+            {
+                if (sud[r][c] == 0)
+                {
+                    for (const auto &item : missing[r][c])
+                    {
+                        std::cout << fmt::format("Item {} in ({}, {})\n", item, r, c);
+                        hist[item].first++;
+                        hist[item].second = Point(r, c);
+                    }
+                }
+            }
+        }
+
+        for (uint8_t i = 1; i < SUDOKU_POSSIBLE_NUMBERS; i++)
+        {
+            if (hist[i].first == 1)
+            {
+                sud[hist[i].second.row][hist[i].second.col] = i;
+                missing[hist[i].second.row][hist[i].second.col].clear();
+                erase_missing_box(missing, hist[i].second.row, hist[i].second.col, i);
+                result = true;
+            }
+        }
+        return result;
+    }
+
     bool Sudoku::solve()
     {
         solve_candidates_t solve_candidates;
@@ -130,7 +280,7 @@ namespace sud
             {
                 if (board[row][col] == 0)
                 {
-                    solve_candidates[row][col]= possible_items(row, col);
+                    solve_candidates[row][col] = possible_items(row, col);
                     n_unsolved++;
                 }
             }
@@ -138,27 +288,60 @@ namespace sud
 
         // try to solve
         uint8_t n_unsolved_prev = 0;
+        Sudoku last_valid;
         while (n_unsolved > 0 && n_unsolved != n_unsolved_prev)
         {
             n_unsolved_prev = n_unsolved;
-            for (square_t row = 0; row < SUDOKU_SIZE; row++)
-            {
-                for (square_t col = 0; col < SUDOKU_SIZE; col++)
-                {
-                    if (board[row][col] == 0)
-                    {
-                        const missing_t &missing = solve_candidates[row][col];
-                        if (missing.size() == 1)
-                        {
-                            std::cout << fmt::format("Solved {} {} = {}\n", row, col, missing[0]);
 
-                            board[row][col] = missing[0];
-                            solve_candidates[row][col].clear();
-                            n_unsolved--;
-                        }
+            for (square_t row=0; row < SUDOKU_SIZE; row+=SUDOKU_BOX_SIZE)
+            {
+                for (square_t col=0; col < SUDOKU_SIZE; col+=SUDOKU_BOX_SIZE)
+                {
+                    while (solve_box(board, row, col, solve_candidates))
+                    {
+                        n_unsolved--;
                     }
                 }
             }
+
+
+            for (square_t row=0; row < SUDOKU_SIZE; row++)
+            {
+                while (solve_X_dir(board, row, solve_candidates))
+                {
+                    n_unsolved--;
+                }
+            }
+
+            for (square_t col=0; col < SUDOKU_SIZE; col++)
+            {
+                while (solve_Y_dir(board, col, solve_candidates))
+                {
+                    n_unsolved--;
+                }
+            }
+
+            
+
+            if (!check())
+            {
+                last_valid.save_to_CSV("last_valid.csv");
+                return false;
+            }
+            last_valid = *this;
+            std::cout << *this << std::endl;
+
+            /*
+            const missing_t &missing = solve_candidates[row][col];
+            if (missing.size() == 1)
+            {
+                std::cout << fmt::format("Solved {} {} = {}\n", row, col, missing[0]);
+
+                board[row][col] = missing[0];
+                solve_candidates[row][col].clear();
+                n_unsolved--;
+            }
+            */
         }
         return n_unsolved == 0;
     }
@@ -176,6 +359,93 @@ namespace sud
         return result;
     }
 
+    bool Sudoku::check()
+    {
+        // check rows
+        for (square_t row = 0; row < SUDOKU_SIZE; row++)
+        {
+            std::array<bool, SUDOKU_POSSIBLE_NUMBERS> unique{false};
+            for (square_t col = 0; col < SUDOKU_SIZE; col++)
+            {
+                if (board[row][col] != 0)
+                {
+                    if (unique[board[row][col]])
+                    {
+                        return false;
+                    }
+                    unique[board[row][col]] = true;
+                }
+            }
+        }
+
+        // check cols
+        for (square_t col = 0; col < SUDOKU_SIZE; col++)
+        {
+            std::array<bool, SUDOKU_POSSIBLE_NUMBERS> unique{false};
+            for (square_t row = 0; row < SUDOKU_SIZE; row++)
+            {
+                if (board[row][col] != 0)
+                {
+                    if (unique[board[row][col]])
+                    {
+                        return false;
+                    }
+                    unique[board[row][col]] = true;
+                }
+            }
+        }
+
+        // check boxes
+        for (square_t box_row = 0; box_row < SUDOKU_SIZE; box_row += SUDOKU_BOX_SIZE)
+        {
+            for (square_t box_col = 0; box_col < SUDOKU_SIZE; box_col += SUDOKU_BOX_SIZE)
+            {
+                std::array<bool, SUDOKU_POSSIBLE_NUMBERS> unique{false};
+                for (square_t r = box_row; r < box_row + SUDOKU_BOX_SIZE; r++)
+                {
+                    for (square_t c = box_col; c < box_col + SUDOKU_BOX_SIZE; c++)
+                    {
+                        if (board[r][c] != 0)
+                        {
+                            if (unique[board[r][c]])
+                            {
+                                return false;
+                            }
+                            unique[board[r][c]] = true;
+                        }
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    bool Sudoku::save_to_CSV(const string filename)
+    {
+        std::ofstream file(filename);
+        if (!file.is_open())
+        {
+            return false;
+        }
+
+        for (square_t row = 0; row < SUDOKU_SIZE; row++)
+        {
+            for (square_t col = 0; col < SUDOKU_SIZE; col++)
+            {
+                file << static_cast<int>(board[row][col]);
+                if (col != SUDOKU_SIZE - 1)
+                {
+                    file << '\t';
+                }
+            }
+            if (row != SUDOKU_SIZE - 1)
+            {
+                file << std::endl;
+            }
+        }
+        file.close();
+        return true;
+    }
 
     ostream &operator<<(ostream &os, const Sudoku &sudoku)
     {
@@ -195,7 +465,14 @@ namespace sud
                 {
                     os << "| ";
                 }
-                os << static_cast<int>(cell) << " ";
+                if (cell == 0)
+                {
+                    os << ". ";
+                }
+                else
+                {
+                    os << static_cast<int>(cell) << " ";
+                }
                 j++;
             }
             os << endl;
