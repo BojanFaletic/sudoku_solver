@@ -39,9 +39,6 @@ namespace sud
     // description of the sudoku board
     using sudoku_t = array<array<uint8_t, SUDOKU_SIZE>, SUDOKU_SIZE>;
 
-    // boolean array of size 10 indicating which numbers are missing
-    using unique_t = array<bool, SUDOKU_POSSIBLE_NUMBERS>;
-
     // boolean array of size 9 indicating which numbers are missing
     using missing_t = set<square_t>;
 
@@ -65,6 +62,13 @@ namespace sud
         sudoku_t board;
 
         void load_from_CSV(const string filename);
+        void load_from_kaggle(const string filename);
+
+        std::array<missing_t, SUDOKU_SIZE> possible_items_in_row(const square_t row) const;
+        std::array<missing_t, SUDOKU_SIZE> possible_items_in_col(const square_t col) const;
+        std::array<missing_t, SUDOKU_SIZE> possible_items_in_box(const square_t row, const square_t col) const;
+
+        // Solver techniques
         bool row_solver();
         bool col_solver();
         bool box_solver();

@@ -77,48 +77,30 @@ namespace sud
         }
     }
 
-    unique_t missing_items_X_dir(const sudoku_t &sud, square_t row)
+    missing_t Sudoku::possible_items(const square_t row, const square_t col) const
     {
-        unique_t result{false};
-        for_each(sud[row].begin(), sud[row].end(), [&result](const uint8_t &item)
-                 { result[item] |= true; });
-        return result;
-    }
+        std::set<square_t> result = {1,2,3,4,5,6,7,8,9};
+        
+        // check row
+        for (square_t c = 0; c < SUDOKU_SIZE; c++)
+        {
+            result.erase(board[row][c]);
+        }
 
-    unique_t missing_items_Y_dir(const sudoku_t &sud, square_t col)
-    {
-        unique_t result{false};
-        for_each(sud.begin(), sud.end(), [&result, col](const array<uint8_t, SUDOKU_SIZE> &row)
-                 { result[row[col]] |= true; });
-        return result;
-    }
+        // check column
+        for (square_t r = 0; r < SUDOKU_SIZE; r++)
+        {
+            result.erase(board[r][col]);
+        }
 
-    unique_t missing_items_box(const sudoku_t &sud, square_t row, square_t col)
-    {
-        unique_t result{false};
+        // check box
         const square_t box_row = (row / SUDOKU_BOX_SIZE) * SUDOKU_BOX_SIZE;
         const square_t box_col = (col / SUDOKU_BOX_SIZE) * SUDOKU_BOX_SIZE;
         for (square_t r = box_row; r < box_row + SUDOKU_BOX_SIZE; r++)
         {
             for (square_t c = box_col; c < box_col + SUDOKU_BOX_SIZE; c++)
             {
-                result[sud[r][c]] |= true;
-            }
-        }
-        return result;
-    }
-
-    missing_t Sudoku::possible_items(const square_t row, const square_t col) const
-    {
-        const unique_t missing_X = missing_items_X_dir(board, row);
-        const unique_t missing_Y = missing_items_Y_dir(board, col);
-        const unique_t missing_box = missing_items_box(board, row, col);
-        missing_t result;
-        for (uint8_t i = 1; i < SUDOKU_POSSIBLE_NUMBERS; i++)
-        {
-            if (!(missing_X[i] || missing_Y[i] || missing_box[i]))
-            {
-                result.insert(i);
+                result.erase(board[r][c]);
             }
         }
         return result;
@@ -370,19 +352,6 @@ namespace sud
         return count_missing(*this) == 0;
     }
 
-    missing_t to_number(const unique_t &unique)
-    {
-        missing_t result;
-        for (uint8_t i = 1; i < SUDOKU_POSSIBLE_NUMBERS; i++)
-        {
-            if (unique[i])
-            {
-                result.insert(i);
-            }
-        }
-        return result;
-    }
-
     bool Sudoku::check()
     {
         // check rows
@@ -469,6 +438,14 @@ namespace sud
         }
         file.close();
         return true;
+    }
+
+    void Sudoku::load_from_kaggle(const string filename)
+    {
+        /*
+        id,puzzle,solution,clues,difficulty
+        1,1..5.37..6.3..8.9......98...1.......8761..........6...........7.8.9.76.47...6.312,198543726643278591527619843914735268876192435235486179462351987381927654759864312,27,2.2
+        */
     }
 
     square_t Sudoku::get(const square_t row, const square_t col) const
