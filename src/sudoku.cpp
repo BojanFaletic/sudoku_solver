@@ -118,7 +118,7 @@ namespace sud
         {
             if (!(missing_X[i] || missing_Y[i] || missing_box[i]))
             {
-                result.push_back(i);
+                result.insert(i);
             }
         }
         return result;
@@ -128,11 +128,7 @@ namespace sud
     {
         for (square_t row = 0; row < SUDOKU_SIZE; row++)
         {
-            auto el = std::find(missing[row][col].begin(), missing[row][col].end(), value);
-            if (el != missing[row][col].end())
-            {
-                missing[row][col].erase(el);
-            }
+            missing[row][col].erase(value);
         }
     }
 
@@ -156,11 +152,7 @@ namespace sud
         {
             for (square_t c = box_col; c < box_col + SUDOKU_BOX_SIZE; c++)
             {
-                auto el = std::find(missing[r][c].begin(), missing[r][c].end(), value);
-                if (el != missing[r][c].end())
-                {
-                    missing[r][c].erase(el);
-                }
+                missing[r][c].erase(value);
             }
         }
     }
@@ -178,7 +170,6 @@ namespace sud
             {
                 for (const auto &item : missing[row][col])
                 {
-                    std::cout << fmt::format("Item {} in ({}, {})\n", item, row, col);
                     hist[item].first++;
                     hist[item].second = col;
                 }
@@ -222,6 +213,7 @@ namespace sud
         {
             if (hist[i].first == 1)
             {
+                std::cout << fmt::format("Inserting {} in ({}, {})\n", i, hist[i].second, col);
                 sud[hist[i].second][col] = i;
                 missing[hist[i].second][col].clear();
                 erase_missing_Y_dir(missing, col, i);
@@ -260,7 +252,7 @@ namespace sud
         {
             if (hist[i].first == 1)
             {
-                std::cout << fmt::format("Item {} in ({}, {})\n", i, hist[i].second.row, hist[i].second.col);
+                std::cout << fmt::format("Inserting {} in ({}, {})\n", i, hist[i].second.row, hist[i].second.col);
                 sud[hist[i].second.row][hist[i].second.col] = i;
                 missing[hist[i].second.row][hist[i].second.col].clear();
                 erase_missing_box(missing, hist[i].second.row, hist[i].second.col, i);
@@ -270,10 +262,9 @@ namespace sud
         return result;
     }
 
-    std::pair<solve_candidates_t, uint8_t> check_missing(const Sudoku &sud)
+    solve_candidates_t check_missing(const Sudoku &sud)
     {
         solve_candidates_t solve_candidates;
-        uint8_t n_unsolved = 0;
         for (square_t row = 0; row < SUDOKU_SIZE; row++)
         {
             for (square_t col = 0; col < SUDOKU_SIZE; col++)
@@ -281,25 +272,84 @@ namespace sud
                 if (sud.get(row, col) == 0)
                 {
                     solve_candidates[row][col] = sud.possible_items(row, col);
+                }
+            }
+        }
+        return solve_candidates;
+    }
+
+    uint8_t count_missing(const Sudoku &sud)
+    {
+        uint8_t n_unsolved = 0;
+        for (square_t row = 0; row < SUDOKU_SIZE; row++)
+        {
+            for (square_t col = 0; col < SUDOKU_SIZE; col++)
+            {
+                if (sud.get(row, col) == 0)
+                {
                     n_unsolved++;
                 }
             }
         }
-        return std::make_pair(solve_candidates, n_unsolved);
+        return n_unsolved;
     }
 
-    bool Sudoku::solve()
+    bool Sudoku::row_solver()
     {
-        auto [solve_candidates, n_unsolved] = check_missing(*this);
+        uint8_t n_unsolved_old = 0;
+        uint8_t n_unsolved = count_missing(*this);
+        uint8_t n_unsolved_origin = n_unsolved;
+        solve_candidates_t solve_candidates = check_missing(*this);
 
-        // try to solve
-        uint8_t n_unsolved_prev = 0;
-        do
+        while (n_unsolved_old != n_unsolved)
         {
-            n_unsolved_prev = n_unsolved;
-            for (square_t row = 0; row < SUDOKU_SIZE; row += SUDOKU_BOX_SIZE)
+            for (square_t row = 0; row < SUDOKU_SIZE; row++)
             {
-                for (square_t col = 0; col < SUDOKU_SIZE; col += SUDOKU_BOX_SIZE)
+                while (solve_X_dir(board, row, solve_candidates))
+                {
+                    n_unsolved--;
+                }
+            }
+            n_unsolved_old = n_unsolved;
+            solve_candidates = check_missing(*this);
+        }
+        return n_unsolved_origin < n_unsolved;
+    }
+
+    bool Sudoku::col_solver()
+    {
+        uint8_t n_unsolved_old = 0;
+        uint8_t n_unsolved = count_missing(*this);
+        uint8_t n_unsolved_origin = n_unsolved;
+        solve_candidates_t solve_candidates = check_missing(*this);
+
+        while (n_unsolved_old != n_unsolved)
+        {
+            for (square_t col = 0; col < SUDOKU_SIZE; col++)
+            {
+                while (solve_Y_dir(board, col, solve_candidates))
+                {
+                    n_unsolved--;
+                }
+            }
+            n_unsolved_old = n_unsolved;
+            solve_candidates = check_missing(*this);
+        }
+        return n_unsolved_origin < n_unsolved;
+    }
+
+    bool Sudoku::box_solver()
+    {
+        uint8_t n_unsolved_old = 0;
+        uint8_t n_unsolved = count_missing(*this);
+        uint8_t n_unsolved_origin = n_unsolved;
+        solve_candidates_t solve_candidates = check_missing(*this);
+
+        while (n_unsolved_old != n_unsolved)
+        {
+            for (square_t row = 0; row < SUDOKU_SIZE; row++)
+            {
+                for (square_t col = 0; col < SUDOKU_SIZE; col++)
                 {
                     while (solve_box(board, row, col, solve_candidates))
                     {
@@ -307,48 +357,32 @@ namespace sud
                     }
                 }
             }
-            std::tie(solve_candidates, n_unsolved) = check_missing(*this);
-        } while (n_unsolved_prev != n_unsolved);
+            n_unsolved_old = n_unsolved;
+            solve_candidates = check_missing(*this);
+        }
+        return n_unsolved_origin < n_unsolved;
+    }
 
-#if 0
-            for (square_t row=0; row < SUDOKU_SIZE; row++)
+    bool Sudoku::solve()
+    {
+        bool updated = true;
+
+        while (updated)
+        {
+            auto solve_candidates = check_missing(*this);
+            updated = false;
+            for (square_t row = 0; row < SUDOKU_SIZE; row += SUDOKU_BOX_SIZE)
             {
-                while (solve_X_dir(board, row, solve_candidates))
+                for (square_t col = 0; col < SUDOKU_SIZE; col += SUDOKU_BOX_SIZE)
                 {
-                    n_unsolved--;
+                    while (solve_box(board, row, col, solve_candidates))
+                    {
+                        updated = true;
+                    }
                 }
             }
-
-            for (square_t col=0; col < SUDOKU_SIZE; col++)
-            {
-                while (solve_Y_dir(board, col, solve_candidates))
-                {
-                    n_unsolved--;
-                }
-            }
-#endif
-
-        if (!check())
-        {
-            // last_valid.save_to_CSV("last_valid.csv");
-            return false;
         }
-        // last_valid = *this;
-        std::cout << *this << std::endl;
-
-        /*
-        const missing_t &missing = solve_candidates[row][col];
-        if (missing.size() == 1)
-        {
-            std::cout << fmt::format("Solved {} {} = {}\n", row, col, missing[0]);
-
-            board[row][col] = missing[0];
-            solve_candidates[row][col].clear();
-            n_unsolved--;
-        }
-        */
-
-        return n_unsolved == 0;
+        return 0 == 0;
     }
 
     missing_t to_number(const unique_t &unique)
@@ -358,7 +392,7 @@ namespace sud
         {
             if (unique[i])
             {
-                result.push_back(i);
+                result.insert(i);
             }
         }
         return result;

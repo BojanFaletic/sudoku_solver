@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <ostream>
 #include <stdbool.h>
+#include <set>
 #include <boost/container/static_vector.hpp>
 
 namespace sud
@@ -42,7 +43,7 @@ namespace sud
     using unique_t = array<bool, SUDOKU_POSSIBLE_NUMBERS>;
 
     // boolean array of size 9 indicating which numbers are missing
-    using missing_t = static_vector<square_t, SUDOKU_POSSIBLE_NUMBERS - 1>;
+    using missing_t = set<square_t>;
 
     // boolean array of size 9x9 indicating which numbers are missing
     using missing_full_t = array<array<missing_t, SUDOKU_SIZE>, SUDOKU_SIZE>;
@@ -64,6 +65,9 @@ namespace sud
         sudoku_t board;
 
         void load_from_CSV(const string filename);
+        bool row_solver();
+        bool col_solver();
+        bool box_solver();
 
     public:
         Sudoku();
