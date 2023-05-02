@@ -31,7 +31,7 @@ namespace sud
         }
     }
 
-    Sudoku::Sudoku(const string filename)
+    Sudoku::Sudoku(const string &filename)
     {
         ifstream file(filename);
         if (!file.is_open())
@@ -74,6 +74,14 @@ namespace sud
             }
             row++;
         }
+        if (!check())
+        {
+            throw std::runtime_error("Invalid sudoku");
+        }
+    }
+
+    Sudoku::Sudoku(const sudoku_t &board) : board(board)
+    {
         if (!check())
         {
             throw std::runtime_error("Invalid sudoku");
@@ -490,7 +498,7 @@ namespace sud
         return true;
     }
 
-    bool Sudoku::save_to_CSV(const string filename)
+    bool Sudoku::save_to_CSV(const string &filename)
     {
         std::ofstream file(filename);
         if (!file.is_open())

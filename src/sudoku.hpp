@@ -6,6 +6,7 @@
 #include <ostream>
 #include <stdbool.h>
 #include <set>
+#include <optional>
 
 namespace sud
 {
@@ -14,18 +15,29 @@ namespace sud
     /* -----------------*/
 
     // size of the sudoku board
-    const size_t SUDOKU_SIZE = 9;
+    constexpr size_t SUDOKU_SIZE = 9;
 
     // size of the sudoku box
-    const size_t SUDOKU_BOX_SIZE = 3;
+    constexpr size_t SUDOKU_BOX_SIZE = 3;
+
+    // size of the sudoku board
+    constexpr size_t SUDOKU_BOARD_SIZE = SUDOKU_SIZE * SUDOKU_SIZE;
 
     // number of numbers in the sudoku board
-    const size_t SUDOKU_POSSIBLE_NUMBERS = 10;
+    constexpr size_t SUDOKU_POSSIBLE_NUMBERS = 10;
 
-    /* Error codes */
-    enum Error_t{
-        SUDOKU_OK = 0,
-        SUDOKU_ERROR
+    /* -----------------*/
+    /* -- enumerators -- */
+    /* -----------------*/
+
+    enum Error_t
+    {
+        SUDOKU_SUCCESS = 0,
+        SUDOKU_ERROR,
+        LOADER_SUCCESS,
+        LOADER_ERROR,
+        LOADER_INVALID_PUZZLE,
+
     };
 
     /*-----------------*/
@@ -48,6 +60,15 @@ namespace sud
     {
         square_t row;
         square_t col;
+    };
+
+    struct SudokuData
+    {
+        uint32_t id;
+        sudoku_t puzzle;
+        std::optional<sudoku_t> solution;
+        std::optional<uint32_t> clues;
+        std::optional<float> difficulty;
     };
 
     using solve_candidates_t = std::array<std::array<missing_t, SUDOKU_SIZE>, SUDOKU_SIZE>;
@@ -81,10 +102,11 @@ namespace sud
 
     public:
         Sudoku();
-        Sudoku(const std::string filename);
+        Sudoku(const std::string &filename);
+        Sudoku(const sudoku_t &board);
 
         // Save the sudoku to a CSV file
-        bool save_to_CSV(const std::string filename);
+        bool save_to_CSV(const std::string &filename);
 
         // Solve the sudoku
         bool solve();
