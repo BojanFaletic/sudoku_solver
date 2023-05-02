@@ -79,8 +79,8 @@ namespace sud
 
     missing_t Sudoku::possible_items(const square_t row, const square_t col) const
     {
-        std::set<square_t> result = {1,2,3,4,5,6,7,8,9};
-        
+        std::set<square_t> result = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+
         // check row
         for (square_t c = 0; c < SUDOKU_SIZE; c++)
         {
@@ -244,16 +244,90 @@ namespace sud
         return result;
     }
 
-    solve_candidates_t check_missing(const Sudoku &sud)
+    missing_t Sudoku::possible_items_in_row(square_t row) const
+    {
+        missing_t result = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+        for (square_t col = 0; col < SUDOKU_SIZE; col++)
+        {
+            result.erase(get(row, col));
+        }
+        return result;
+    }
+
+    missing_t Sudoku::possible_items_in_col(square_t col) const
+    {
+        missing_t result = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+        for (square_t row = 0; row < SUDOKU_SIZE; row++)
+        {
+            result.erase(get(row, col));
+        }
+        return result;
+    }
+
+    missing_t Sudoku::possible_items_in_box(square_t row, square_t col) const
+    {
+        missing_t result = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+        const square_t box_row = (row / SUDOKU_BOX_SIZE) * SUDOKU_BOX_SIZE;
+        const square_t box_col = (col / SUDOKU_BOX_SIZE) * SUDOKU_BOX_SIZE;
+        for (square_t r = box_row; r < box_row + SUDOKU_BOX_SIZE; r++)
+        {
+            for (square_t c = box_col; c < box_col + SUDOKU_BOX_SIZE; c++)
+            {
+                result.erase(get(r, c));
+            }
+        }
+        return result;
+    }
+
+    std::array<missing_t, SUDOKU_SIZE> Sudoku::possible_items_in_row() const
+    {
+        std::array<missing_t, SUDOKU_SIZE> result;
+        for (square_t row = 0; row < SUDOKU_SIZE; row++)
+        {
+            result[row] = possible_items_in_row(row);
+        }
+        return result;
+    }
+
+    std::array<missing_t, SUDOKU_SIZE> Sudoku::possible_items_in_col() const
+    {
+        std::array<missing_t, SUDOKU_SIZE> result;
+        for (square_t col = 0; col < SUDOKU_SIZE; col++)
+        {
+            result[col] = possible_items_in_col(col);
+        }
+        return result;
+    }
+
+    std::array<missing_t, SUDOKU_SIZE> Sudoku::possible_items_in_box() const
+    {
+        std::array<missing_t, SUDOKU_SIZE> result;
+        for (size_t idx = 0; idx < SUDOKU_SIZE; idx++)
+        {
+            result[idx] = possible_items_in_box(idx / SUDOKU_BOX_SIZE, idx % SUDOKU_BOX_SIZE);
+        }
+        return result;
+    }
+
+    solve_candidates_t Sudoku::check_missing() const
     {
         solve_candidates_t solve_candidates;
+        const std::array<missing_t, SUDOKU_SIZE> missing_row = possible_items_in_row();
+        const std::array<missing_t, SUDOKU_SIZE> missing_col = possible_items_in_col();
+        const std::array<missing_t, SUDOKU_SIZE> missing_box = possible_items_in_box();
+
         for (square_t row = 0; row < SUDOKU_SIZE; row++)
         {
             for (square_t col = 0; col < SUDOKU_SIZE; col++)
             {
-                if (sud.get(row, col) == 0)
+                if (get(row, col) == 0)
                 {
-                    solve_candidates[row][col] = sud.possible_items(row, col);
+                    // TODO: make this more efficient
+                    solve_candidates[row][col] = possible_items(row, col);
+                }
+                else
+                {
+                    solve_candidates[row][col] = {};
                 }
             }
         }
@@ -285,7 +359,7 @@ namespace sud
         while (n_unsolved_old != n_unsolved)
         {
             n_unsolved_old = n_unsolved;
-            solve_candidates_t solve_candidates = check_missing(*this);
+            solve_candidates_t solve_candidates = check_missing();
 
             for (square_t row = 0; row < SUDOKU_SIZE; row++)
             {
@@ -307,7 +381,7 @@ namespace sud
         while (n_unsolved_old != n_unsolved)
         {
             n_unsolved_old = n_unsolved;
-            solve_candidates_t solve_candidates = check_missing(*this);
+            solve_candidates_t solve_candidates = check_missing();
 
             for (square_t col = 0; col < SUDOKU_SIZE; col++)
             {
@@ -329,7 +403,7 @@ namespace sud
         while (n_unsolved_old != n_unsolved)
         {
             n_unsolved_old = n_unsolved;
-            solve_candidates_t solve_candidates = check_missing(*this);
+            solve_candidates_t solve_candidates = check_missing();
 
             for (square_t row = 0; row < SUDOKU_SIZE; row++)
             {
