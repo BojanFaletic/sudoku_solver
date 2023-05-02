@@ -3,23 +3,32 @@
 #include <sstream>
 #include <algorithm>
 #include "loader.hpp"
+#include <limits>
 
 using namespace std;
 
 namespace sud
 {
 
-    // Error_t sudoku_from_string(const std::string &str, sudoku_t &sudoku);
+    Error_t sudoku_from_string(const std::string &str, sudoku_t &sudoku);
 
     Loader::Loader(const string &filename)
     {
-        if (load_from_kaggle(filename) != LOADER_SUCCESS)
+        if (load_from_kaggle(filename, numeric_limits<uint32_t>::max()) != LOADER_SUCCESS)
         {
             throw runtime_error("Error loading file");
         }
     }
 
-    Error_t Loader::load_from_kaggle(const std::string &filename)
+    Loader::Loader(const std::string &filename, uint32_t max_puzzles)
+    {
+        if (load_from_kaggle(filename, max_puzzles) != LOADER_SUCCESS)
+        {
+            throw runtime_error("Error loading file");
+        }
+    }
+
+    Error_t Loader::load_from_kaggle(const std::string &filename, uint32_t max_puzzles)
     {
         ifstream file(filename);
         if (!file.is_open())
@@ -29,7 +38,7 @@ namespace sud
 
         string line;
         getline(file, line); // skip header
-        while (getline(file, line))
+        while (getline(file, line) && data.size() < max_puzzles)
         {
             SudokuData sudoku;
             stringstream ss(line);
@@ -107,7 +116,7 @@ namespace sud
         return data;
     }
 
-    const std::optional<SudokuData> &Loader::get_data(uint32_t id) const
+    const std::optional<SudokuData> Loader::get_data(uint32_t id) const
     {
         auto item = find_if(data.begin(), data.end(), [id](const SudokuData &sudoku)
                             { return sudoku.id == id; });
@@ -118,7 +127,7 @@ namespace sud
         return *item;
     }
 
-    const std::optional<sudoku_t> &Loader::get_puzzle(uint32_t id) const
+    const std::optional<sudoku_t> Loader::get_puzzle(uint32_t id) const
     {
         auto item = find_if(data.begin(), data.end(), [id](const SudokuData &sudoku)
                             { return sudoku.id == id; });
@@ -129,7 +138,7 @@ namespace sud
         return item->puzzle;
     }
 
-    const std::optional<sudoku_t> &Loader::get_solution(uint32_t id) const
+    const std::optional<sudoku_t> Loader::get_solution(uint32_t id) const
     {
         auto item = find_if(data.begin(), data.end(), [id](const SudokuData &sudoku)
                             { return sudoku.id == id; });

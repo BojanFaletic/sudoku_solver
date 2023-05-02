@@ -11,6 +11,9 @@ find_package(Boost REQUIRED COMPONENTS log)
 
 find_package(fmt CONFIG REQUIRED)
 
+get_filename_component(DATA_FILE_ABS "data/sudoku-3m.csv" ABSOLUTE BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+add_definitions(-DDATA_FILE="${DATA_FILE_ABS}")
+
 include_directories(src)
 
 # include test directory

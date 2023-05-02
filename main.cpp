@@ -4,6 +4,8 @@
 #include <boost/log/expressions.hpp>
 
 #include "sudoku.hpp"
+#include "loader.hpp"
+
 
 using namespace std;
 using namespace sud;
@@ -16,6 +18,9 @@ int main()
     log::core::get()->set_filter(
         log::trivial::severity >= log::trivial::warning
     );
+
+    Loader loader{DATA_FILE, 10};
+
 
     Sudoku sudoku{"sample.csv"};
     cout << sudoku << endl;
