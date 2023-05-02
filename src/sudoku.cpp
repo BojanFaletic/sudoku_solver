@@ -71,20 +71,21 @@ namespace sud
             }
             row++;
         }
-        if (!check()){
+        if (!check())
+        {
             throw std::runtime_error("Invalid sudoku");
         }
     }
 
-    unique_t missing_items_X_dir(sudoku_t &sud, square_t row)
+    unique_t missing_items_X_dir(const sudoku_t &sud, square_t row)
     {
         unique_t result{false};
-        for_each(sud[row].begin(), sud[row].end(), [&result](uint8_t &item)
+        for_each(sud[row].begin(), sud[row].end(), [&result](const uint8_t &item)
                  { result[item] |= true; });
         return result;
     }
 
-    unique_t missing_items_Y_dir(sudoku_t &sud, square_t col)
+    unique_t missing_items_Y_dir(const sudoku_t &sud, square_t col)
     {
         unique_t result{false};
         for_each(sud.begin(), sud.end(), [&result, col](const array<uint8_t, SUDOKU_SIZE> &row)
@@ -92,7 +93,7 @@ namespace sud
         return result;
     }
 
-    unique_t missing_items_box(sudoku_t &sud, square_t row, square_t col)
+    unique_t missing_items_box(const sudoku_t &sud, square_t row, square_t col)
     {
         unique_t result{false};
         const square_t box_row = (row / SUDOKU_BOX_SIZE) * SUDOKU_BOX_SIZE;
@@ -107,7 +108,7 @@ namespace sud
         return result;
     }
 
-    missing_t Sudoku::possible_items(const square_t row, const square_t col)
+    missing_t Sudoku::possible_items(const square_t row, const square_t col) const
     {
         const unique_t missing_X = missing_items_X_dir(board, row);
         const unique_t missing_Y = missing_items_Y_dir(board, col);
@@ -248,7 +249,6 @@ namespace sud
                 {
                     for (const auto &item : missing[r][c])
                     {
-                        std::cout << fmt::format("Item {} in ({}, {})\n", item, r, c);
                         hist[item].first++;
                         hist[item].second = Point(r, c);
                     }
@@ -260,6 +260,7 @@ namespace sud
         {
             if (hist[i].first == 1)
             {
+                std::cout << fmt::format("Item {} in ({}, {})\n", i, hist[i].second.row, hist[i].second.col);
                 sud[hist[i].second.row][hist[i].second.col] = i;
                 missing[hist[i].second.row][hist[i].second.col].clear();
                 erase_missing_box(missing, hist[i].second.row, hist[i].second.col, i);
@@ -269,33 +270,36 @@ namespace sud
         return result;
     }
 
-    bool Sudoku::solve()
+    std::pair<solve_candidates_t, uint8_t> check_missing(const Sudoku &sud)
     {
         solve_candidates_t solve_candidates;
         uint8_t n_unsolved = 0;
-        // find missing items
         for (square_t row = 0; row < SUDOKU_SIZE; row++)
         {
             for (square_t col = 0; col < SUDOKU_SIZE; col++)
             {
-                if (board[row][col] == 0)
+                if (sud.get(row, col) == 0)
                 {
-                    solve_candidates[row][col] = possible_items(row, col);
+                    solve_candidates[row][col] = sud.possible_items(row, col);
                     n_unsolved++;
                 }
             }
         }
+        return std::make_pair(solve_candidates, n_unsolved);
+    }
+
+    bool Sudoku::solve()
+    {
+        auto [solve_candidates, n_unsolved] = check_missing(*this);
 
         // try to solve
         uint8_t n_unsolved_prev = 0;
-        Sudoku last_valid;
-        while (n_unsolved > 0 && n_unsolved != n_unsolved_prev)
+        do
         {
             n_unsolved_prev = n_unsolved;
-
-            for (square_t row=0; row < SUDOKU_SIZE; row+=SUDOKU_BOX_SIZE)
+            for (square_t row = 0; row < SUDOKU_SIZE; row += SUDOKU_BOX_SIZE)
             {
-                for (square_t col=0; col < SUDOKU_SIZE; col+=SUDOKU_BOX_SIZE)
+                for (square_t col = 0; col < SUDOKU_SIZE; col += SUDOKU_BOX_SIZE)
                 {
                     while (solve_box(board, row, col, solve_candidates))
                     {
@@ -303,8 +307,10 @@ namespace sud
                     }
                 }
             }
+            std::tie(solve_candidates, n_unsolved) = check_missing(*this);
+        } while (n_unsolved_prev != n_unsolved);
 
-
+#if 0
             for (square_t row=0; row < SUDOKU_SIZE; row++)
             {
                 while (solve_X_dir(board, row, solve_candidates))
@@ -320,29 +326,28 @@ namespace sud
                     n_unsolved--;
                 }
             }
+#endif
 
-            
-
-            if (!check())
-            {
-                last_valid.save_to_CSV("last_valid.csv");
-                return false;
-            }
-            last_valid = *this;
-            std::cout << *this << std::endl;
-
-            /*
-            const missing_t &missing = solve_candidates[row][col];
-            if (missing.size() == 1)
-            {
-                std::cout << fmt::format("Solved {} {} = {}\n", row, col, missing[0]);
-
-                board[row][col] = missing[0];
-                solve_candidates[row][col].clear();
-                n_unsolved--;
-            }
-            */
+        if (!check())
+        {
+            // last_valid.save_to_CSV("last_valid.csv");
+            return false;
         }
+        // last_valid = *this;
+        std::cout << *this << std::endl;
+
+        /*
+        const missing_t &missing = solve_candidates[row][col];
+        if (missing.size() == 1)
+        {
+            std::cout << fmt::format("Solved {} {} = {}\n", row, col, missing[0]);
+
+            board[row][col] = missing[0];
+            solve_candidates[row][col].clear();
+            n_unsolved--;
+        }
+        */
+
         return n_unsolved == 0;
     }
 
@@ -445,6 +450,16 @@ namespace sud
         }
         file.close();
         return true;
+    }
+
+    square_t Sudoku::get(const square_t row, const square_t col) const
+    {
+        return board[row][col];
+    }
+
+    void Sudoku::set(const square_t row, const square_t col, const square_t value)
+    {
+        board[row][col] = value;
     }
 
     ostream &operator<<(ostream &os, const Sudoku &sudoku)

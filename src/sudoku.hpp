@@ -64,7 +64,6 @@ namespace sud
         sudoku_t board;
 
         void load_from_CSV(const string filename);
-        missing_t possible_items(const square_t row, const square_t col);
 
     public:
         Sudoku();
@@ -75,6 +74,10 @@ namespace sud
 
         bool solve();
         bool check();
+
+        square_t get(const square_t row, const square_t col) const;
+        void set(const square_t row, const square_t col, const square_t value);
+        missing_t possible_items(const square_t row, const square_t col) const;
         
         friend ostream &operator<<(ostream &os, const Sudoku &sudoku);
     };
