@@ -6,12 +6,9 @@
 #include <ostream>
 #include <stdbool.h>
 #include <set>
-#include <boost/container/static_vector.hpp>
 
 namespace sud
 {
-    using namespace std;
-    using boost::container::static_vector;
     /*-----------------*/
     /* -- constants -- */
     /* -----------------*/
@@ -26,8 +23,10 @@ namespace sud
     const size_t SUDOKU_POSSIBLE_NUMBERS = 10;
 
     /* Error codes */
-    const int SUDOKU_ERROR = -1;
-    const int SUDOKU_OK = 0;
+    enum Error_t{
+        SUDOKU_OK = 0,
+        SUDOKU_ERROR
+    };
 
     /*-----------------*/
     /* -- typedefs -- */
@@ -37,13 +36,13 @@ namespace sud
     using square_t = uint8_t;
 
     // description of the sudoku board
-    using sudoku_t = array<array<uint8_t, SUDOKU_SIZE>, SUDOKU_SIZE>;
+    using sudoku_t = std::array<std::array<uint8_t, SUDOKU_SIZE>, SUDOKU_SIZE>;
 
     // boolean array of size 9 indicating which numbers are missing
-    using missing_t = set<square_t>;
+    using missing_t = std::set<square_t>;
 
     // boolean array of size 9x9 indicating which numbers are missing
-    using missing_full_t = array<array<missing_t, SUDOKU_SIZE>, SUDOKU_SIZE>;
+    using missing_full_t = std::array<std::array<missing_t, SUDOKU_SIZE>, SUDOKU_SIZE>;
 
     struct Point
     {
@@ -62,8 +61,8 @@ namespace sud
         sudoku_t board;
 
         // Types of loading CSV files
-        void load_from_CSV(const string filename);
-        void load_from_kaggle(const string filename);
+        void load_from_CSV(const std::string filename);
+        void load_from_kaggle(const std::string filename);
 
         // Get candidates for a given square in a row, col or box
         missing_t possible_items_in_row(square_t row) const;
@@ -82,10 +81,10 @@ namespace sud
 
     public:
         Sudoku();
-        Sudoku(const string filename);
+        Sudoku(const std::string filename);
 
         // Save the sudoku to a CSV file
-        bool save_to_CSV(const string filename);
+        bool save_to_CSV(const std::string filename);
 
         // Solve the sudoku
         bool solve();
@@ -104,7 +103,7 @@ namespace sud
         void set(const square_t row, const square_t col, const square_t value);
 
         // Print the sudoku board
-        friend ostream &operator<<(ostream &os, const Sudoku &sudoku);
+        friend std::ostream &operator<<(std::ostream &os, const Sudoku &sudoku);
     };
 
 }; // namespace sud

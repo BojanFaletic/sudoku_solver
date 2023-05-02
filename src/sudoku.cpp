@@ -6,6 +6,8 @@
 #include <sstream>
 
 #include <boost/tokenizer.hpp>
+#include <boost/log/trivial.hpp>
+
 #include <iostream>
 #include <map>
 #include <set>
@@ -13,6 +15,7 @@
 #include <fmt/core.h>
 
 using namespace boost;
+using namespace std;
 
 namespace sud
 {
@@ -162,7 +165,7 @@ namespace sud
         {
             if (hist[i].first == 1)
             {
-                std::cout << fmt::format("Inserting {} in ({}, {})\n", i, row, hist[i].second);
+                BOOST_LOG_TRIVIAL(trace) << fmt::format("Inserting {} in ({}, {})\n", i, row, hist[i].second);
                 sud[row][hist[i].second] = i;
                 missing[row][hist[i].second].clear();
                 erase_missing_X_dir(missing, row, i);
@@ -195,7 +198,7 @@ namespace sud
         {
             if (hist[i].first == 1)
             {
-                std::cout << fmt::format("Inserting {} in ({}, {})\n", i, hist[i].second, col);
+                BOOST_LOG_TRIVIAL(trace) << fmt::format("Inserting {} in ({}, {})\n", i, hist[i].second, col);
                 sud[hist[i].second][col] = i;
                 missing[hist[i].second][col].clear();
                 erase_missing_Y_dir(missing, col, i);
@@ -234,7 +237,7 @@ namespace sud
         {
             if (hist[i].first == 1)
             {
-                std::cout << fmt::format("Inserting {} in ({}, {})\n", i, hist[i].second.row, hist[i].second.col);
+                BOOST_LOG_TRIVIAL(trace) << fmt::format("Inserting {} in ({}, {})\n", i, hist[i].second.row, hist[i].second.col);
                 sud[hist[i].second.row][hist[i].second.col] = i;
                 missing[hist[i].second.row][hist[i].second.col].clear();
                 erase_missing_box(missing, hist[i].second.row, hist[i].second.col, i);

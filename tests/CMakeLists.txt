@@ -5,6 +5,7 @@ project(tests)
 # include gtest with vcpkg
 find_package(GTest CONFIG REQUIRED)
 find_package(fmt CONFIG REQUIRED)
+find_package(Boost REQUIRED COMPONENTS log)
 
 # include ../src
 include_directories(../src)
@@ -15,3 +16,4 @@ add_executable(tests main.cpp ../src/sudoku.cpp)
 # link gtest
 target_link_libraries(tests PRIVATE GTest::gmock GTest::gtest GTest::gmock_main GTest::gtest_main)
 target_link_libraries(tests PRIVATE fmt::fmt)
+target_link_libraries(tests PRIVATE Boost::log)

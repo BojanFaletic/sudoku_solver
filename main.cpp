@@ -1,12 +1,22 @@
 #include <iostream>
+#include <boost/log/trivial.hpp>
+#include <boost/log/core.hpp>
+#include <boost/log/expressions.hpp>
 
 #include "sudoku.hpp"
 
 using namespace std;
 using namespace sud;
+using namespace boost;
+
 
 int main()
 {
+    // set up logging severity
+    log::core::get()->set_filter(
+        log::trivial::severity >= log::trivial::warning
+    );
+
     Sudoku sudoku{"sample.csv"};
     cout << sudoku << endl;
 
