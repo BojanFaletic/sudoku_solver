@@ -1,9 +1,7 @@
 #pragma once
 
-#include <string>
 #include <vector>
-#include <optional>
-#include "sudoku.hpp"
+#include "types.hpp"
 
 namespace sud
 {
@@ -25,4 +23,4 @@ namespace sud
         const std::optional<sudoku_t> get_puzzle(uint32_t id) const;
         const std::optional<sudoku_t> get_solution(uint32_t id) const;
     };
-};
+}; // namespace sud

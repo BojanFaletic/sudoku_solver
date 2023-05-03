@@ -1,18 +1,13 @@
-#include "sudoku.hpp"
 
-#include <string>
 #include <algorithm>
-#include <fstream>
-#include <sstream>
-
 #include <boost/tokenizer.hpp>
 #include <boost/log/trivial.hpp>
-
+#include <string>
+#include <fstream>
+#include <sstream>
 #include <iostream>
-#include <map>
-#include <set>
-
 #include <fmt/core.h>
+#include "sudoku.hpp"
 
 using namespace boost;
 using namespace std;
