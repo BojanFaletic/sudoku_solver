@@ -5,6 +5,7 @@
 
 #include "sudoku.hpp"
 #include "loader.hpp"
+#include "fmt/format.h"
 
 
 using namespace std;
@@ -19,8 +20,15 @@ int main()
         log::trivial::severity >= log::trivial::warning
     );
 
+    
     Loader loader{DATA_FILE, 10};
-
+    for (const auto &sudoku : loader.get_data())
+    {
+        cout << fmt::format("Solving puzzle {} with difficulty {}", sudoku.id, sudoku.difficulty.value_or(-1)) << endl;
+        Sudoku s{sudoku.puzzle};
+        s.solve();
+        cout << s << endl;
+    }
 
     Sudoku sudoku{"sample.csv"};
     cout << sudoku << endl;

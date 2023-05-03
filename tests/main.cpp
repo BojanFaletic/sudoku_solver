@@ -9,7 +9,7 @@ using namespace sud;
 
 TEST(Sudoku, constructor)
 {
-    Sudoku sudoku = Sudoku();
+    Sudoku sudoku{"sample.csv"};
 }
 
 int main(int argc, char **argv)
