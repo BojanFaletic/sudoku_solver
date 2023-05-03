@@ -30,7 +30,7 @@ int main()
         cout << s << endl;
     }
 
-    Sudoku sudoku{"sample.csv"};
+    Sudoku sudoku{TEST_FILE_ABS};
     cout << sudoku << endl;
 
     cout << "Solving..." << endl;

@@ -1,16 +1,19 @@
-#include <gtest/gtest.h>
-
 #include "Sudoku.hpp"
 #include <vector>
 #include <array>
+#include <iostream>
+#include <gtest/gtest.h>
+
 
 using namespace std;
 using namespace sud;
 
-TEST(Sudoku, constructor)
+TEST(Solver, constructor)
 {
-    Sudoku sudoku{"sample.csv"};
+    cout << TEST_FILE_ABS << endl;
+    Sudoku sudoku{TEST_FILE_ABS};
 }
+
 
 int main(int argc, char **argv)
 {

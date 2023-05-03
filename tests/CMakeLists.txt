@@ -2,29 +2,25 @@
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
+# vcpkg required packages
 find_package(Boost REQUIRED COMPONENTS container log)
 find_package(fmt CONFIG REQUIRED)
 find_package(GTest CONFIG REQUIRED)
 
-# add all src/*.cpp files to the executable
-set(SOURCES "main.cpp")
-aux_source_directory(../src SOURCES)
+# mark all .cpp files to be compiled
+include_directories(../include/sud)
+aux_source_directory(../src/sud SOURCES2)
 
-# create a test executable
-add_executable(sudoku_tests ${SOURCES})
+# add tests
+add_executable(loader_tests sud/loader_tests.cpp ${SOURCES2})
+add_executable(solver_tests sud/solver_tests.cpp ${SOURCES2})
 
-# link to the sudoku executable and GTest libraries
-target_link_libraries(sudoku_tests PRIVATE Boost::container)
-target_link_libraries(sudoku_tests PRIVATE Boost::log)
-target_link_libraries(sudoku_tests PRIVATE fmt::fmt)
-target_link_libraries(sudoku_tests PRIVATE GTest::gmock GTest::gtest GTest::gmock_main GTest::gtest_main)
+# link libraries
+set(LIBS Boost::container Boost::log fmt::fmt GTest::gmock GTest::gtest GTest::gmock_main GTest::gtest_main)
+target_link_libraries(loader_tests PRIVATE ${LIBS})
+target_link_libraries(solver_tests PRIVATE ${LIBS})
 
-# add the tests
+# add tests to CTest
 include(GoogleTest)
-gtest_discover_tests(sudoku_tests)
-
-
-# copy the sample csv file to the build directory
-set(SAMPLE_CSV ../sample.csv)
-configure_file(${SAMPLE_CSV} ${CMAKE_CURRENT_BINARY_DIR}/Debug/sample.csv COPYONLY)
-
+gtest_discover_tests(loader_tests)
+gtest_discover_tests(solver_tests)

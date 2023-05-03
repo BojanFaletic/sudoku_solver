@@ -525,14 +525,6 @@ namespace sud
         return true;
     }
 
-    void Sudoku::load_from_kaggle(const string filename)
-    {
-        /*
-        id,puzzle,solution,clues,difficulty
-        1,1..5.37..6.3..8.9......98...1.......8761..........6...........7.8.9.76.47...6.312,198543726643278591527619843914735268876192435235486179462351987381927654759864312,27,2.2
-        */
-    }
-
     square_t Sudoku::get(const square_t row, const square_t col) const
     {
         return board[row][col];

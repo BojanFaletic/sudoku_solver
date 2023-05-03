@@ -83,7 +83,6 @@ namespace sud
 
         // Types of loading CSV files
         void load_from_CSV(const std::string filename);
-        void load_from_kaggle(const std::string filename);
 
         // Get candidates for a given square in a row, col or box
         missing_t possible_items_in_row(square_t row) const;
