@@ -6,6 +6,7 @@
 #include "Sudoku.hpp"
 #include "Solver.hpp"
 #include <bitset>
+#include <fmt/core.h>
 
 namespace sud
 {
@@ -41,6 +42,33 @@ TEST(SimpleSolverTest, find_possible)
     bitset<10> possible_expected_0_0{vect2bitset({2, 9})};
     EXPECT_EQ(solver.possible_board[0][0], possible_expected_0_0);
 }
+
+TEST(SimpleSolverTest, solve_full_simple)
+{
+    Sudoku sudoku{TEST_FILE_ABS};
+    SimpleSolverTest solver(sudoku);
+
+    cout << "Original:" << endl;
+    cout << sudoku << endl;
+
+    const int max_iter = 10;
+    for (int i = 0; i < max_iter; i++)
+    {
+        solver.find_possible();
+        solver.update_possible();
+
+        cout << fmt::format("After find_possible and update_possible: {}", i) << endl;
+        cout << sudoku << endl;
+
+        if (sudoku.is_solved())
+        {
+            break;
+        }
+    }
+   
+    EXPECT_EQ(sudoku.is_solved(), true);
+}
+
 
 int main(int argc, char **argv)
 {

@@ -52,6 +52,8 @@ namespace sud
         square_t get(const square_t row, const square_t col) const;
         void set(const square_t row, const square_t col, const square_t value);
 
+        bool is_solved() const;
+
         // Print the sudoku board
         friend std::ostream &operator<<(std::ostream &os, const Sudoku &sudoku);
     };

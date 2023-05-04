@@ -31,16 +31,20 @@ namespace sud
         possible_t row_wise_possible();
         possible_t col_wise_possible();
         possible_t box_wise_possible();
-        void find_possible();
 
         // filter out unique numbers
         bool unique_filter_row();
         bool unique_filter_col();
         bool unique_filter_box();
-        bool unique_filter();
+        
 
     public:
         SimpleSolver(Sudoku &sudoku);
+
+        void find_possible();
+        bool unique_filter();
+        
+        void update_possible();
 
         status_e solve() override;
     };

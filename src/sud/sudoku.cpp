@@ -504,6 +504,11 @@ namespace sud
         return SUCCESS;
     }
 
+    bool Sudoku::is_solved() const{
+        return (count_missing(*this) == 0);
+    }
+
+
     status_e Sudoku::save_to_CSV(const string &filename)
     {
         std::ofstream file(filename);

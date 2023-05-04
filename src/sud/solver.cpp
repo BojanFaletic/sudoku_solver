@@ -1,5 +1,6 @@
 #include "solver.hpp"
 #include <algorithm>
+#include <cmath>
 
 namespace sud
 {
@@ -188,8 +189,31 @@ namespace sud
 
     bool SimpleSolver::unique_filter()
     {
-        return unique_filter_row() || unique_filter_col() || unique_filter_box();
+        unique_filter_row();
+        unique_filter_col();
+        unique_filter_box();
+        
+        return false;
     }
+
+    void SimpleSolver::update_possible(){
+        for (square_t row = 0; row < SUDOKU_SIZE; row++)
+        {
+            for (square_t col = 0; col < SUDOKU_SIZE; col++)
+            {
+                if (sudoku.get(row, col) == 0)
+                {
+                    // if there is only one possible number, set it
+                    if (possible_board[row][col].count() == 1)
+                    {
+                        uint8_t num = std::log2(possible_board[row][col].to_ulong());
+                        sudoku.set(row, col, num);
+                    }
+                }
+            }
+        }
+    }
+
 
     void SimpleSolver::find_possible()
     {
