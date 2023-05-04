@@ -2,6 +2,8 @@
 
 #include "types.hpp"
 #include "Sudoku.hpp"
+#include <bitset>
+#include <array>
 
 namespace sud
 {
@@ -10,16 +12,31 @@ namespace sud
     {
     protected:
         Sudoku &sudoku;
+
     public:
         Solver(Sudoku &sudoku);
 
         virtual status_e solve() = 0;
     };
 
-    class RowSolver : public Solver
+
+    class SimpleSolver : public Solver
     {
+        friend class SimpleSolverTest; 
+    private:
+        using possible_t = std::array<std::bitset<SUDOKU_POSSIBLE_NUMBERS>, SUDOKU_SIZE>;
+        std::array<possible_t, SUDOKU_SIZE> possible_board;
+
+        possible_t row_wise_possible();
+        possible_t col_wise_possible();
+        possible_t box_wise_possible();
+
+        void find_possible();
+
+        void unique_solver();
+
     public:
-        RowSolver(Sudoku &sudoku);
+        SimpleSolver(Sudoku &sudoku);
 
         status_e solve() override;
     };
