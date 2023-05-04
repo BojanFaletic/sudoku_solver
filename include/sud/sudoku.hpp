@@ -10,8 +10,8 @@ namespace sud
     private:
         sudoku_t board;
 
-        // Types of loading CSV files
-        void load_from_CSV(const std::string filename);
+        void zero_out_board();
+        status_e read_from_CSV(const std::string &filename);
 
         // Get candidates for a given square in a row, col or box
         missing_t possible_items_in_row(square_t row) const;
@@ -24,9 +24,9 @@ namespace sud
         std::array<missing_t, SUDOKU_SIZE> possible_items_in_box() const;
 
         // Solver techniques
-        bool row_solver();
-        bool col_solver();
-        bool box_solver();
+        status_e row_solver();
+        status_e col_solver();
+        status_e box_solver();
 
     public:
         Sudoku();
@@ -34,13 +34,13 @@ namespace sud
         Sudoku(const sudoku_t &board);
 
         // Save the sudoku to a CSV file
-        bool save_to_CSV(const std::string &filename);
+        status_e save_to_CSV(const std::string &filename);
 
         // Solve the sudoku
-        bool solve();
+        status_e solve();
 
         // Check if the sudoku is solved
-        bool check();
+        status_e check();
 
         // Get the possible items in a given square
         missing_t possible_items(const square_t row, const square_t col) const;

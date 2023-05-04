@@ -27,14 +27,22 @@ namespace sud{
     /* -- enumerators -- */
     /* -----------------*/
 
-    enum Error_t
+    enum status_e
     {
-        SUDOKU_SUCCESS = 0,
+        SUCCESS = 0,
+        ERROR,
+        SUDOKU_SUCCESS,
         SUDOKU_ERROR,
         LOADER_SUCCESS,
         LOADER_ERROR,
         LOADER_INVALID_PUZZLE,
-
+        SUDOKU_NOT_SOLVED,
+        SUDOKU_SOLVED,
+        SUDOKU_INVALID_ROW,
+        SUDOKU_INVALID_COLUMN,
+        SUDOKU_INVALID_BOX,
+        SUDOKU_INVALID_VALUE,
+        FILE_NOT_FOUND,
     };
 
     /*-----------------*/

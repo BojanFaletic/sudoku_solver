@@ -10,7 +10,7 @@ using namespace std;
 namespace sud
 {
 
-    Error_t sudoku_from_string(const std::string &str, sudoku_t &sudoku);
+    status_e sudoku_from_string(const std::string &str, sudoku_t &sudoku);
 
     Loader::Loader(const string &filename)
     {
@@ -28,7 +28,7 @@ namespace sud
         }
     }
 
-    Error_t Loader::load_from_kaggle(const std::string &filename, uint32_t max_puzzles)
+    status_e Loader::load_from_kaggle(const std::string &filename, uint32_t max_puzzles)
     {
         ifstream file(filename);
         if (!file.is_open())
@@ -83,7 +83,7 @@ namespace sud
         return LOADER_SUCCESS;
     }
 
-    Error_t sudoku_from_string(const std::string &str, sudoku_t &sudoku)
+    status_e sudoku_from_string(const std::string &str, sudoku_t &sudoku)
     {
         if (str.size() != SUDOKU_BOARD_SIZE)
         {

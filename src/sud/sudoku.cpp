@@ -17,29 +17,46 @@ namespace sud
 
     Sudoku::Sudoku()
     {
-        for (auto &row : board)
-        {
-            for (auto &cell : row)
-            {
-                cell = 0;
-            }
-        }
+        zero_out_board();
     }
 
     Sudoku::Sudoku(const string &filename)
     {
+        if (read_from_CSV(filename))
+        {
+            throw std::runtime_error("Invalid sudoku");
+        }
+    }
+
+    Sudoku::Sudoku(const sudoku_t &board) : board(board)
+    {
+        if (check())
+        {
+            throw std::runtime_error("Invalid sudoku");
+        }
+    }
+
+    void Sudoku::zero_out_board()
+    {
+        for_each_n(board.begin(), SUDOKU_SIZE, [](auto &row)
+                   { fill_n(row.begin(), SUDOKU_SIZE, 0); });
+    }
+
+    status_e Sudoku::read_from_CSV(const std::string &filename)
+    {
         ifstream file(filename);
         if (!file.is_open())
         {
-            throw std::runtime_error("Could not open file");
+            return FILE_NOT_FOUND;
         }
+
         std::string line;
         square_t row = 0;
         while (getline(file, line))
         {
             if (row >= SUDOKU_SIZE)
             {
-                throw std::runtime_error("Too many rows");
+                return SUDOKU_INVALID_ROW;
             }
 
             tokenizer<char_separator<char>> tokenizer(line, char_separator<char>("\t"));
@@ -48,7 +65,7 @@ namespace sud
             {
                 if (col >= SUDOKU_SIZE)
                 {
-                    throw std::runtime_error("Too many columns");
+                    return SUDOKU_INVALID_COLUMN;
                 }
                 if (token == "")
                 {
@@ -57,7 +74,7 @@ namespace sud
                 uint8_t value = stoi(token);
                 if (value >= SUDOKU_POSSIBLE_NUMBERS)
                 {
-                    throw std::runtime_error("Invalid value");
+                    return SUDOKU_INVALID_VALUE;
                 }
                 board[row][col] = value;
                 col++;
@@ -65,22 +82,15 @@ namespace sud
 
             if (col != SUDOKU_SIZE)
             {
-                throw std::runtime_error("Too few columns");
+                return SUDOKU_INVALID_COLUMN;
             }
             row++;
         }
-        if (!check())
+        if (check())
         {
-            throw std::runtime_error("Invalid sudoku");
+            return LOADER_INVALID_PUZZLE;
         }
-    }
-
-    Sudoku::Sudoku(const sudoku_t &board) : board(board)
-    {
-        if (!check())
-        {
-            throw std::runtime_error("Invalid sudoku");
-        }
+        return SUCCESS;
     }
 
     missing_t Sudoku::possible_items(const square_t row, const square_t col) const
@@ -356,7 +366,7 @@ namespace sud
         return n_unsolved;
     }
 
-    bool Sudoku::row_solver()
+    status_e Sudoku::row_solver()
     {
         uint8_t n_unsolved_old = 0;
         uint8_t n_unsolved = count_missing(*this);
@@ -375,10 +385,10 @@ namespace sud
                 }
             }
         }
-        return n_unsolved_origin < n_unsolved;
+        return (n_unsolved_origin < n_unsolved) ? SUDOKU_NOT_SOLVED : SUDOKU_SOLVED;
     }
 
-    bool Sudoku::col_solver()
+    status_e Sudoku::col_solver()
     {
         uint8_t n_unsolved_old = 0;
         uint8_t n_unsolved = count_missing(*this);
@@ -397,10 +407,10 @@ namespace sud
                 }
             }
         }
-        return n_unsolved_origin < n_unsolved;
+        return (n_unsolved_origin < n_unsolved) ? SUDOKU_NOT_SOLVED : SUDOKU_SOLVED;
     }
 
-    bool Sudoku::box_solver()
+    status_e Sudoku::box_solver()
     {
         uint8_t n_unsolved_old = 0;
         uint8_t n_unsolved = count_missing(*this);
@@ -422,17 +432,18 @@ namespace sud
                 }
             }
         }
-        return n_unsolved_origin < n_unsolved;
+        return (n_unsolved_origin < n_unsolved) ? SUDOKU_NOT_SOLVED : SUDOKU_SOLVED;
     }
 
-    bool Sudoku::solve()
+    status_e Sudoku::solve()
     {
-        while (row_solver() || col_solver() || box_solver())
-            ;
-        return count_missing(*this) == 0;
+        row_solver();
+        col_solver();
+        box_solver();
+        return (count_missing(*this) == 0) ? SUDOKU_SOLVED : SUDOKU_NOT_SOLVED;
     }
 
-    bool Sudoku::check()
+    status_e Sudoku::check()
     {
         // check rows
         for (square_t row = 0; row < SUDOKU_SIZE; row++)
@@ -444,7 +455,7 @@ namespace sud
                 {
                     if (unique[board[row][col]])
                     {
-                        return false;
+                        return SUDOKU_INVALID_ROW;
                     }
                     unique[board[row][col]] = true;
                 }
@@ -461,7 +472,7 @@ namespace sud
                 {
                     if (unique[board[row][col]])
                     {
-                        return false;
+                        return SUDOKU_INVALID_COLUMN;
                     }
                     unique[board[row][col]] = true;
                 }
@@ -482,7 +493,7 @@ namespace sud
                         {
                             if (unique[board[r][c]])
                             {
-                                return false;
+                                return SUDOKU_INVALID_BOX;
                             }
                             unique[board[r][c]] = true;
                         }
@@ -490,15 +501,15 @@ namespace sud
                 }
             }
         }
-        return true;
+        return SUCCESS;
     }
 
-    bool Sudoku::save_to_CSV(const string &filename)
+    status_e Sudoku::save_to_CSV(const string &filename)
     {
         std::ofstream file(filename);
         if (!file.is_open())
         {
-            return false;
+            return FILE_NOT_FOUND;
         }
 
         for (square_t row = 0; row < SUDOKU_SIZE; row++)
@@ -517,7 +528,7 @@ namespace sud
             }
         }
         file.close();
-        return true;
+        return SUCCESS;
     }
 
     square_t Sudoku::get(const square_t row, const square_t col) const
