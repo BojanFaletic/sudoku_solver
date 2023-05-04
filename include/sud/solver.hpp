@@ -27,13 +27,17 @@ namespace sud
         using possible_t = std::array<std::bitset<SUDOKU_POSSIBLE_NUMBERS>, SUDOKU_SIZE>;
         std::array<possible_t, SUDOKU_SIZE> possible_board;
 
+        // search strategy for each of the square
         possible_t row_wise_possible();
         possible_t col_wise_possible();
         possible_t box_wise_possible();
-
         void find_possible();
 
-        void unique_solver();
+        // filter out unique numbers
+        bool unique_filter_row();
+        bool unique_filter_col();
+        bool unique_filter_box();
+        bool unique_filter();
 
     public:
         SimpleSolver(Sudoku &sudoku);
