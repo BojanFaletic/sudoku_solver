@@ -2,6 +2,8 @@
 #include <algorithm>
 #include <cmath>
 #include <cassert>
+#include <fmt/format.h>
+#include <iostream>
 
 namespace sud
 {
@@ -80,6 +82,7 @@ namespace sud
 
         for (const Point &point : PointIterator())
         {
+            std::cout << fmt::format("Point: ({}, {})\n", point.row, point.col);
             if (sudoku[point] == 0)
             {
                 const uint8_t val = missing_number(point);
@@ -94,7 +97,7 @@ namespace sud
     }
 
     void SimpleSolver::insert(const Point &point, const square_t value){
-        assertm(sudoku[point] == 0, "Trying to insert a value in a non-empty square");
+        assertm(sudoku[point] != 0, "Trying to insert a value in a non-empty square");
         sudoku[point] = value;
         // todo update possible_board
     } 

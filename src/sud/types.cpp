@@ -18,7 +18,7 @@ namespace sud
 
     bool PointIterator::operator!=(const PointIterator &other) const
     {
-        return point.row == other.point.row && point.col == other.point.col;
+        return point.col != other.point.col || point.row != other.point.row;
     }
 
     Point PointIterator::operator*() const
@@ -28,12 +28,12 @@ namespace sud
 
     PointIterator PointIterator::begin() const
     {
-        return PointIterator(Point(0, 0));
+        return PointIterator({0, 0});
     }
 
     PointIterator PointIterator::end() const
     {
-        return PointIterator(Point(SUDOKU_SIZE, SUDOKU_SIZE));
+        return PointIterator({SUDOKU_SIZE, 0});
     }
 
 }; // namespace sud
