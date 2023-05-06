@@ -2,6 +2,7 @@
 
 #include "Sudoku.hpp"
 #include "Loader.hpp"
+#include "Solver.hpp"
 #include <vector>
 #include <array>
 #include <fmt/format.h>
@@ -22,7 +23,8 @@ TEST(Loader, load)
     {
         cout << fmt::format("Solving puzzle {} with difficulty {}", sudoku.id, sudoku.difficulty.value_or(-1)) << endl;
         Sudoku s{sudoku.puzzle};
-        s.solve();
+        SimpleSolver solver{s};
+        solver.solve();
         cout << s << endl;
     }
 }

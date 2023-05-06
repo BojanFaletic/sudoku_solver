@@ -55,20 +55,4 @@ namespace sud
         status_e solve() override;
     };
 
-    class ColSolver : public Solver
-    {
-    public:
-        ColSolver(Sudoku &sudoku);
-
-        status_e solve() override;
-    };
-
-    class BoxSolver : public Solver
-    {
-    public:
-        BoxSolver(Sudoku &sudoku);
-
-        status_e solve() override;
-    };
-
 }; // namespace sud
