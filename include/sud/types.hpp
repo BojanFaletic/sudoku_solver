@@ -4,8 +4,12 @@
 #include <optional>
 #include <array>
 #include <set>
+#include <cassert>
 
-namespace sud{
+#define assertm(exp, msg) assert(((void)msg, exp))
+
+namespace sud
+{
 
     /*-----------------*/
     /* -- constants -- */
@@ -65,6 +69,23 @@ namespace sud{
     {
         square_t row;
         square_t col;
+    };
+
+    class PointIterator
+    {
+    private:
+        Point point;
+
+    public:
+        PointIterator() : point({0, 0}) {}
+        PointIterator(const Point &point) : point(point) {}
+
+        PointIterator &operator++();
+        bool operator!=(const PointIterator &other) const;
+        Point operator*() const;
+
+        PointIterator begin() const;
+        PointIterator end() const;
     };
 
     struct SudokuData

@@ -1,6 +1,7 @@
 #include "solver.hpp"
 #include <algorithm>
 #include <cmath>
+#include <cassert>
 
 namespace sud
 {
@@ -59,6 +60,45 @@ namespace sud
         return poss;
     }
 
+    uint8_t SimpleSolver::missing_number(const Point &point){
+        if (possible_board[point.row][point.col].count() == 1)
+        {
+            for (uint8_t i = 1; i < SUDOKU_POSSIBLE_NUMBERS; i++)
+            {
+                if (possible_board[point.row][point.col][i])
+                {
+                    return i;
+                }
+            }
+        }
+        return 0;
+    }
+        
+
+    bool SimpleSolver::basic_solve(){
+        bool res = false;
+
+        for (const Point &point : PointIterator())
+        {
+            if (sudoku[point] == 0)
+            {
+                const uint8_t val = missing_number(point);
+                if (val != 0)
+                {
+                    insert(point, val);
+                    res = true;
+                }
+            }
+        }
+        return res;
+    }
+
+    void SimpleSolver::insert(const Point &point, const square_t value){
+        assertm(sudoku[point] == 0, "Trying to insert a value in a non-empty square");
+        sudoku[point] = value;
+        // todo update possible_board
+    } 
+
     bool SimpleSolver::unique_filter_row()
     {
         bool res = false;
@@ -82,7 +122,8 @@ namespace sud
             {
                 if (count[i].freq == 1)
                 {
-                    sudoku[count[i].pos] = i;
+                    insert(count[i].pos, i);
+                    possible_board[count[i].pos.row][count[i].pos.col].reset();
                     res = true;
                 }
             }
@@ -113,7 +154,8 @@ namespace sud
             {
                 if (count[i].freq == 1)
                 {
-                    sudoku[count[i].pos] = i;
+                    insert(count[i].pos, i);
+                    possible_board[count[i].pos.row][count[i].pos.col].reset();
                     res = true;
                 }
             }
@@ -150,7 +192,8 @@ namespace sud
             {
                 if (count[i].freq == 1)
                 {
-                    sudoku[count[i].pos] = i;
+                    insert(count[i].pos, i);
+                    possible_board[count[i].pos.row][count[i].pos.col].reset();
                     res = true;
                 }
             }

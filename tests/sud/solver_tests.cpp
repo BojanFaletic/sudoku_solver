@@ -38,6 +38,19 @@ bitset<10> vect2bitset(vector<uint8_t> vect)
     return result;
 }
 
+vector<uint8_t> bitset2vect(bitset<10> bitset)
+{
+    vector<uint8_t> result;
+    for (int i = 0; i < 10; i++)
+    {
+        if (bitset.test(i))
+        {
+            result.push_back(i);
+        }
+    }
+    return result;
+}
+
 TEST(SimpleSolverTest, find_possible)
 {
     Sudoku sudoku{TEST_FILE_ABS};
@@ -46,6 +59,37 @@ TEST(SimpleSolverTest, find_possible)
 
     bitset<10> possible_expected_0_0{vect2bitset({2, 9})};
     EXPECT_EQ(solver.possible_board[0][0], possible_expected_0_0);
+}
+
+TEST(SimpleSolverTest, box_filter)
+{
+    Loader loader{DATA_FILE, 10};
+    Sudoku sudoku{loader.get_puzzle(1).value()};
+    SimpleSolverTest solver(sudoku);
+
+    cout << "Original:" << endl;
+    cout << sudoku << endl;
+
+    // do a few iterations of normal solver
+    for (int i = 0; i < 10; i++)
+    {
+        solver.find_possible();
+        bool res = solver.basic_solve();
+        if (!res)
+        {
+            break;
+        }
+
+        cout << fmt::format("After find_possible and update_possible: {}", i) << endl;
+        cout << sudoku << endl;
+    } 
+
+    cout << "Before unique_filter_box" << endl;
+    solver.find_possible();
+    solver.unique_filter_box();
+    cout << sudoku << endl;
+    vector<uint8_t> expected{6};
+    EXPECT_EQ(bitset2vect(solver.possible_board[7][3]), expected);
 }
 
 TEST(SimpleSolverTest, solve_full_simple)

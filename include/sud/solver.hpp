@@ -42,10 +42,16 @@ namespace sud
         bool unique_filter_row();
         bool unique_filter_col();
         bool unique_filter_box();
+
+        void insert(const Point &point, const square_t value); 
         
 
     public:
         SimpleSolver(Sudoku &sudoku);
+
+        uint8_t missing_number(const Point &point);
+        
+        bool basic_solve();
 
         void find_possible();
         bool unique_filter();
