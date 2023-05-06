@@ -5,6 +5,7 @@
 
 #include "Sudoku.hpp"
 #include "Solver.hpp"
+#include "Loader.hpp"
 #include <bitset>
 #include <fmt/core.h>
 
@@ -16,6 +17,10 @@ namespace sud
         using SimpleSolver::find_possible;
         using SimpleSolver::possible_board;
         using SimpleSolver::SimpleSolver;
+
+        using SimpleSolver::unique_filter_box;
+        using SimpleSolver::unique_filter_col;
+        using SimpleSolver::unique_filter_row;
     };
 
 }
@@ -60,15 +65,45 @@ TEST(SimpleSolverTest, solve_full_simple)
         cout << fmt::format("After find_possible and update_possible: {}", i) << endl;
         cout << sudoku << endl;
 
+        EXPECT_EQ(sudoku.check(), 0);
         if (sudoku.is_solved())
         {
             break;
         }
     }
-   
+
     EXPECT_EQ(sudoku.is_solved(), true);
 }
 
+TEST(SimpleSolverTest, solve_full_normal)
+{
+    Loader loader{DATA_FILE, 10};
+    Sudoku sudoku(loader.get_puzzle(1).value());
+    SimpleSolverTest solver(sudoku);
+
+    cout << "Original:" << endl;
+    cout << sudoku << endl;
+
+    const int max_iter = 10;
+    for (int i = 0; i < max_iter; i++)
+    {
+        solver.find_possible();
+        solver.unique_filter();
+        solver.update_possible();
+
+        cout << fmt::format("After find_possible and update_possible: {}", i) << endl;
+        cout << sudoku << endl;
+
+        EXPECT_EQ(sudoku.check(), 0);
+
+        if (sudoku.is_solved())
+        {
+            break;
+        }
+    }
+
+    EXPECT_EQ(sudoku.is_solved(), true);
+}
 
 int main(int argc, char **argv)
 {

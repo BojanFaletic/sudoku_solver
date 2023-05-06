@@ -20,7 +20,7 @@ namespace sud
         {
             for (square_t col = 0; col < SUDOKU_SIZE; col++)
             {
-                poss[row].set(sudoku.get(row, col));
+                poss[row].set(sudoku[Point(row, col)]);
             }
             poss[row].flip();
         }
@@ -34,7 +34,7 @@ namespace sud
         {
             for (square_t row = 0; row < SUDOKU_SIZE; row++)
             {
-                poss[col].set(sudoku.get(row, col));
+                poss[col].set(sudoku[Point(row, col)]);
             }
             poss[col].flip();
         }
@@ -53,7 +53,7 @@ namespace sud
             {
                 for (uint8_t j = 0; j < SUDOKU_BOX_SIZE; j++)
                 {
-                    poss[block_idx].set(sudoku.get(row + i, col + j));
+                    poss[block_idx].set(sudoku[Point(row + i, col + j)]);
                 }
             }
             poss[block_idx].flip();
@@ -66,35 +66,26 @@ namespace sud
         bool res = false;
         for (square_t row = 0; row < SUDOKU_SIZE; row++)
         {
-            std::array<std::pair<uint8_t, uint8_t>, SUDOKU_POSSIBLE_NUMBERS> count;
-            std::fill_n(count.begin(), SUDOKU_POSSIBLE_NUMBERS, std::make_pair(0, 0));
-
+            std::array<count_t, SUDOKU_POSSIBLE_NUMBERS> count{};
+            
             for (square_t col = 0; col < SUDOKU_SIZE; col++)
             {
                 for (uint8_t i = 1; i < SUDOKU_POSSIBLE_NUMBERS; i++)
                 {
                     if (possible_board[row][col][i])
                     {
-                        count[i].first++;
-                        count[i].second = col;
+                        count[i].freq++;
+                        count[i].pos = {row, col};
                     }
                 }
             }
 
-            std::sort(count.begin(), count.end(), [](const std::pair<uint8_t, uint8_t> &a, const std::pair<uint8_t, uint8_t> &b)
-                      { return a.first < b.first; });
-
             for (uint8_t i = 1; i < SUDOKU_POSSIBLE_NUMBERS; i++)
             {
-                if (count[i].first == 1)
+                if (count[i].freq == 1)
                 {
-                    possible_board[row][count[i].second].reset();
-                    possible_board[row][count[i].second].set(i);
+                    sudoku[count[i].pos] = i;
                     res = true;
-                }
-                if (count[i].first > 1)
-                {
-                    return res;
                 }
             }
         }
@@ -106,8 +97,7 @@ namespace sud
         bool res = false;
         for (square_t col = 0; col < SUDOKU_SIZE; col++)
         {
-            std::array<std::pair<uint8_t, uint8_t>, SUDOKU_POSSIBLE_NUMBERS> count;
-            std::fill_n(count.begin(), SUDOKU_POSSIBLE_NUMBERS, std::make_pair(0, 0));
+            std::array<count_t, SUDOKU_POSSIBLE_NUMBERS> count{};
 
             for (square_t row = 0; row < SUDOKU_SIZE; row++)
             {
@@ -115,26 +105,18 @@ namespace sud
                 {
                     if (possible_board[row][col][i])
                     {
-                        count[i].first++;
-                        count[i].second = row;
+                        count[i].freq++;
+                        count[i].pos = {row, col};
                     }
                 }
             }
 
-            std::sort(count.begin(), count.end(), [](const std::pair<uint8_t, uint8_t> &a, const std::pair<uint8_t, uint8_t> &b)
-                      { return a.first < b.first; });
-
             for (uint8_t i = 1; i < SUDOKU_POSSIBLE_NUMBERS; i++)
             {
-                if (count[i].first == 1)
+                if (count[i].freq == 1)
                 {
-                    possible_board[count[i].second][col].reset();
-                    possible_board[count[i].second][col].set(i);
+                    sudoku[count[i].pos] = i;
                     res = true;
-                }
-                if (count[i].first > 1)
-                {
-                    return res;
                 }
             }
         }
@@ -149,8 +131,7 @@ namespace sud
             const uint8_t row = block_idx / SUDOKU_BOX_SIZE * SUDOKU_BOX_SIZE;
             const uint8_t col = block_idx % SUDOKU_BOX_SIZE * SUDOKU_BOX_SIZE;
 
-            std::array<std::pair<uint8_t, uint8_t>, SUDOKU_POSSIBLE_NUMBERS> count;
-            std::fill_n(count.begin(), SUDOKU_POSSIBLE_NUMBERS, std::make_pair(0, 0));
+            std::array<count_t, SUDOKU_POSSIBLE_NUMBERS> count{};
 
             for (uint8_t i = 0; i < SUDOKU_BOX_SIZE; i++)
             {
@@ -160,27 +141,19 @@ namespace sud
                     {
                         if (possible_board[row + i][col + j][k])
                         {
-                            count[k].first++;
-                            count[k].second = (row + i) * SUDOKU_SIZE + col + j;
+                            count[k].freq++;
+                            count[k].pos = Point(row + i, col + j);
                         }
                     }
                 }
             }
 
-            std::sort(count.begin(), count.end(), [](const std::pair<uint8_t, uint8_t> &a, const std::pair<uint8_t, uint8_t> &b)
-                      { return a.first < b.first; });
-
             for (uint8_t i = 1; i < SUDOKU_POSSIBLE_NUMBERS; i++)
             {
-                if (count[i].first == 1)
+                if (count[i].freq == 1)
                 {
-                    possible_board[count[i].second / SUDOKU_SIZE][count[i].second % SUDOKU_SIZE].reset();
-                    possible_board[count[i].second / SUDOKU_SIZE][count[i].second % SUDOKU_SIZE].set(i);
+                    sudoku[count[i].pos] = i;
                     res = true;
-                }
-                if (count[i].first > 1)
-                {
-                    return res;
                 }
             }
         }
@@ -227,7 +200,13 @@ namespace sud
             for (square_t col = 0; col < SUDOKU_SIZE; col++)
             {
                 const uint8_t box_idx = (row / SUDOKU_BOX_SIZE) * SUDOKU_BOX_SIZE + col / SUDOKU_BOX_SIZE;
-                possible_board[row][col] = row_wise[row] & col_wise[col] & box_wise[box_idx];
+                if (sudoku.get(row, col) == 0)
+                {
+                    possible_board[row][col] = row_wise[row] & col_wise[col] & box_wise[box_idx];
+                }
+                else{
+                    possible_board[row][col].set(sudoku.get(row, col));
+                }
             }
         }
     }

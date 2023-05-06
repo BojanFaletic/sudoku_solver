@@ -504,10 +504,10 @@ namespace sud
         return SUCCESS;
     }
 
-    bool Sudoku::is_solved() const{
+    bool Sudoku::is_solved() const
+    {
         return (count_missing(*this) == 0);
     }
-
 
     status_e Sudoku::save_to_CSV(const string &filename)
     {
@@ -541,9 +541,29 @@ namespace sud
         return board[row][col];
     }
 
+    square_t Sudoku::get(const Point &point) const
+    {
+        return board[point.row][point.col];
+    }
+
     void Sudoku::set(const square_t row, const square_t col, const square_t value)
     {
         board[row][col] = value;
+    }
+
+    void Sudoku::set(const Point &point, const square_t value)
+    {
+        board[point.row][point.col] = value;
+    }
+
+    square_t Sudoku::operator[](const Point &point) const
+    {
+        return board[point.row][point.col];
+    }
+
+    square_t &Sudoku::operator[](const Point &point)
+    {
+        return board[point.row][point.col];
     }
 
     ostream &operator<<(ostream &os, const Sudoku &sudoku)

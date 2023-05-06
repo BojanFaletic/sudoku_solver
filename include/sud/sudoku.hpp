@@ -50,11 +50,17 @@ namespace sud
 
         // Getters and setters
         square_t get(const square_t row, const square_t col) const;
+        square_t get(const Point &point) const;
+
         void set(const square_t row, const square_t col, const square_t value);
+        void set(const Point &point, const square_t value);
 
         bool is_solved() const;
 
         // Print the sudoku board
+        square_t operator[](const Point &point) const;
+        square_t &operator[](const Point &point);
+
         friend std::ostream &operator<<(std::ostream &os, const Sudoku &sudoku);
     };
 

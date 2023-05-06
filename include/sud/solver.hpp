@@ -32,6 +32,12 @@ namespace sud
         possible_t col_wise_possible();
         possible_t box_wise_possible();
 
+        struct count_t
+        {
+            uint8_t freq;
+            Point pos;
+        };
+
         // filter out unique numbers
         bool unique_filter_row();
         bool unique_filter_col();
