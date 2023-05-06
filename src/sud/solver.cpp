@@ -62,7 +62,8 @@ namespace sud
         return poss;
     }
 
-    uint8_t SimpleSolver::missing_number(const Point &point){
+    uint8_t SimpleSolver::missing_number(const Point &point)
+    {
         if (possible_board[point.row][point.col].count() == 1)
         {
             for (uint8_t i = 1; i < SUDOKU_POSSIBLE_NUMBERS; i++)
@@ -75,14 +76,13 @@ namespace sud
         }
         return 0;
     }
-        
 
-    bool SimpleSolver::basic_solve(){
+    bool SimpleSolver::basic_solve()
+    {
         bool res = false;
 
         for (const Point &point : PointIterator())
         {
-            std::cout << fmt::format("Point: ({}, {})\n", point.row, point.col);
             if (sudoku[point] == 0)
             {
                 const uint8_t val = missing_number(point);
@@ -96,11 +96,13 @@ namespace sud
         return res;
     }
 
-    void SimpleSolver::insert(const Point &point, const square_t value){
-        assertm(sudoku[point] != 0, "Trying to insert a value in a non-empty square");
+    void SimpleSolver::insert(const Point &point, const square_t value)
+    {
+        std::cout << fmt::format("Inserting {} at ({}, {})\n", value, point.row, point.col);
+        assertm(sudoku[point] == 0, "Trying to insert a value in a non-empty square");
         sudoku[point] = value;
         // todo update possible_board
-    } 
+    }
 
     bool SimpleSolver::unique_filter_row()
     {
@@ -166,39 +168,57 @@ namespace sud
         return res;
     }
 
+    uint8_t SimpleSolver::freq_to_value(const std::array<count_t, SUDOKU_POSSIBLE_NUMBERS> &count)
+    {
+        for (uint8_t i = 1; i < SUDOKU_POSSIBLE_NUMBERS; i++)
+        {
+            if (count[i].freq == 1)
+            {
+                return i;
+            }
+        }
+        return 0;
+    }
+
+    void SimpleSolver::update_freq(const Point &point, std::array<count_t, SUDOKU_POSSIBLE_NUMBERS> &count) const
+    {
+        for (uint8_t i = 1; i < SUDOKU_POSSIBLE_NUMBERS; i++)
+        {
+            if (possible_board[point.row][point.col][i])
+            {
+                count[i].freq++;
+                count[i].pos = point;
+            }
+        }
+    }
+
     bool SimpleSolver::unique_filter_box()
     {
         bool res = false;
         for (uint8_t block_idx = 0; block_idx < SUDOKU_SIZE; block_idx++)
         {
-            const uint8_t row = block_idx / SUDOKU_BOX_SIZE * SUDOKU_BOX_SIZE;
-            const uint8_t col = block_idx % SUDOKU_BOX_SIZE * SUDOKU_BOX_SIZE;
-
+            const Point block = Point(block_idx / SUDOKU_BOX_SIZE, block_idx % SUDOKU_BOX_SIZE) * SUDOKU_BOX_SIZE;
             std::array<count_t, SUDOKU_POSSIBLE_NUMBERS> count{};
 
             for (uint8_t i = 0; i < SUDOKU_BOX_SIZE; i++)
             {
                 for (uint8_t j = 0; j < SUDOKU_BOX_SIZE; j++)
                 {
-                    for (uint8_t k = 1; k < SUDOKU_POSSIBLE_NUMBERS; k++)
-                    {
-                        if (possible_board[row + i][col + j][k])
-                        {
-                            count[k].freq++;
-                            count[k].pos = Point(row + i, col + j);
-                        }
-                    }
+                    const Point point = block + Point(i, j);
+                    update_freq(point, count);
                 }
             }
 
-            for (uint8_t i = 1; i < SUDOKU_POSSIBLE_NUMBERS; i++)
+            const uint8_t it = freq_to_value(count);
+            if (it == 0){
+                continue;
+            }
+            Point point = count[it].pos;
+            if (sudoku[point] == 0)
             {
-                if (count[i].freq == 1)
-                {
-                    insert(count[i].pos, i);
-                    possible_board[count[i].pos.row][count[i].pos.col].reset();
-                    res = true;
-                }
+                insert(point, it);
+                possible_board[point.row][point.col].reset();
+                res = true;
             }
         }
         return res;
@@ -239,19 +259,12 @@ namespace sud
         const possible_t box_wise = box_wise_possible();
 
         // for number to be valid, it must be present in all three sets
-        for (square_t row = 0; row < SUDOKU_SIZE; row++)
-        {
-            for (square_t col = 0; col < SUDOKU_SIZE; col++)
-            {
-                const uint8_t box_idx = (row / SUDOKU_BOX_SIZE) * SUDOKU_BOX_SIZE + col / SUDOKU_BOX_SIZE;
-                if (sudoku.get(row, col) == 0)
-                {
-                    possible_board[row][col] = row_wise[row] & col_wise[col] & box_wise[box_idx];
-                }
-                else
-                {
-                    possible_board[row][col].set(sudoku.get(row, col));
-                }
+        for (const Point &point : PointIterator()){
+            const uint8_t box_idx = (point.row / SUDOKU_BOX_SIZE) * SUDOKU_BOX_SIZE + point.col / SUDOKU_BOX_SIZE;
+            possible_board[point.row][point.col] = row_wise[point.row] & col_wise[point.col] & box_wise[box_idx];
+        
+            if (sudoku[point] != 0){
+                possible_board[point.row][point.col].reset();
             }
         }
     }

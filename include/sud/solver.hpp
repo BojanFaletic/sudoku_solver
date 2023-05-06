@@ -44,13 +44,15 @@ namespace sud
         bool unique_filter_box();
 
         void insert(const Point &point, const square_t value); 
-        
+
+        static uint8_t freq_to_value(const std::array<count_t, SUDOKU_POSSIBLE_NUMBERS> &count);
+        void update_freq(const Point &point, std::array<count_t, SUDOKU_POSSIBLE_NUMBERS> &count) const;
 
     public:
         SimpleSolver(Sudoku &sudoku);
 
         uint8_t missing_number(const Point &point);
-        
+
         bool basic_solve();
 
         void find_possible();

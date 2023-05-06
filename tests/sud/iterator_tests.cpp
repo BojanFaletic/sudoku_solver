@@ -14,7 +14,7 @@ using namespace std;
 using namespace sud;
 
 
-TEST(PointIterator2, basic_loop)
+TEST(PointIterator, basic_loop)
 {
     bool visited[9][9] = {false};
     for (const Point &p : PointIterator())

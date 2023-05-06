@@ -5,6 +5,7 @@
 #include <array>
 #include <set>
 #include <cassert>
+#include <sstream>
 
 #define assertm(exp, msg) assert(((void)msg, exp))
 
@@ -69,6 +70,12 @@ namespace sud
     {
         square_t row;
         square_t col;
+
+        // operators
+        Point operator*(const square_t &value) const;
+        Point operator+(const Point &other) const;
+        bool operator==(const Point &other) const;
+        std::ostream &operator<<(std::ostream &os) const;
     };
 
     class PointIterator

@@ -82,14 +82,17 @@ TEST(SimpleSolverTest, box_filter)
 
         cout << fmt::format("After find_possible and update_possible: {}", i) << endl;
         cout << sudoku << endl;
-    } 
+    }
 
     cout << "Before unique_filter_box" << endl;
+
     solver.find_possible();
     solver.unique_filter_box();
     cout << sudoku << endl;
-    vector<uint8_t> expected{6};
-    EXPECT_EQ(bitset2vect(solver.possible_board[7][3]), expected);
+
+    solver.find_possible();
+    vector<uint8_t> expected{};
+    EXPECT_EQ(bitset2vect(solver.possible_board[3][7]), expected);
 }
 
 TEST(SimpleSolverTest, solve_full_simple)
