@@ -6,6 +6,7 @@
 #include "sudoku.hpp"
 #include "loader.hpp"
 #include "solver.hpp"
+#include "simple.hpp"
 #include "fmt/format.h"
 
 

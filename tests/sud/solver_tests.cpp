@@ -6,6 +6,7 @@
 #include "sudoku.hpp"
 #include "solver.hpp"
 #include "loader.hpp"
+#include "simple.hpp"
 #include <bitset>
 #include <fmt/core.h>
 
