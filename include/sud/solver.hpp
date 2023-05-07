@@ -1,7 +1,7 @@
 #pragma once
 
 #include "types.hpp"
-#include "Sudoku.hpp"
+#include "sudoku.hpp"
 #include <bitset>
 #include <array>
 
@@ -22,7 +22,7 @@ namespace sud
 
     class SimpleSolver : public Solver
     {
-        friend class SimpleSolverTest; 
+        friend class SimpleSolverTest;
     private:
         using possible_t = std::array<std::bitset<SUDOKU_POSSIBLE_NUMBERS>, SUDOKU_SIZE>;
         std::array<possible_t, SUDOKU_SIZE> possible_board;
@@ -43,7 +43,7 @@ namespace sud
         bool unique_filter_col();
         bool unique_filter_box();
 
-        void insert(const Point &point, const square_t value); 
+        void insert(const Point &point, const square_t value);
 
         static uint8_t freq_to_value(const std::array<count_t, SUDOKU_POSSIBLE_NUMBERS> &count);
         void update_freq(const Point &point, std::array<count_t, SUDOKU_POSSIBLE_NUMBERS> &count) const;
@@ -73,7 +73,7 @@ namespace sud
 
         void find_possible();
         bool unique_filter();
-        
+
         void update_possible();
 
         status_e solve() override;

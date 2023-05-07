@@ -3,9 +3,9 @@
 #include <iostream>
 #include <gtest/gtest.h>
 
-#include "Sudoku.hpp"
-#include "Solver.hpp"
-#include "Loader.hpp"
+#include "sudoku.hpp"
+#include "solver.hpp"
+#include "loader.hpp"
 #include <bitset>
 #include <fmt/core.h>
 

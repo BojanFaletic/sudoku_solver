@@ -72,12 +72,15 @@ namespace sud
         square_t row;
         square_t col;
 
+        Point() : row(0), col(0) {}
+        Point(square_t row, square_t col) : row(row), col(col) {}
+
         // operators
         Point operator*(const square_t &value) const;
         Point operator/(const square_t &value) const;
         Point operator+(const Point &other) const;
         bool operator==(const Point &other) const;
-        std::ostream &operator<<(std::ostream &os) const;
+        friend std::ostream &operator<<(std::ostream &os, const Point &point);
     };
 
     class PointIterator
@@ -116,7 +119,7 @@ struct fmt::formatter<sud::Point>
     {
         return ctx.begin();
     }
-    
+
     template <typename FormatContext>
     auto format(const sud::Point &p, FormatContext &ctx)
     {
