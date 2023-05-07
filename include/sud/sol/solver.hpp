@@ -2,21 +2,23 @@
 
 #include "types.hpp"
 #include "sudoku.hpp"
-#include <bitset>
+#include "simple.hpp"
+#include "must.hpp"
 #include <array>
-#include <vector>
 
 namespace sud::sol
 {
     class Solver
     {
-    protected:
+    private:
+        Simple simple;
+        Must must;
         Sudoku &sudoku;
 
     public:
         Solver(Sudoku &sudoku);
 
-        virtual status_e solve() = 0;
+        status_e solve();
     };
 
 }; // namespace sud::sol

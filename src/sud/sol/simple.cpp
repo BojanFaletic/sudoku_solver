@@ -4,7 +4,7 @@
 namespace sud::sol
 {
 
-    Simple::Simple(Sudoku &sudoku) : Solver(sudoku)
+    Simple::Simple(Sudoku &sudoku) : sudoku(sudoku)
     {
         find_possible();
     }

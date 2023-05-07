@@ -1,14 +1,19 @@
 #pragma once
 
-#include "solver.hpp"
+#include "types.hpp"
+#include "sudoku.hpp"
+#include <bitset>
+#include <vector>
 
 namespace sud::sol
 {
-    class Simple : public Solver
+    class Simple
     {
         friend class SimpleTest;
 
     private:
+        Sudoku &sudoku;
+
         using possible_t = std::array<std::bitset<SUDOKU_POSSIBLE_NUMBERS>, SUDOKU_SIZE>;
         std::array<possible_t, SUDOKU_SIZE> possible_board;
 
@@ -61,7 +66,7 @@ namespace sud::sol
 
         std::vector<square_t> get_possible(const Point &point) const;
 
-        status_e solve() override;
+        status_e solve();
     };
 
 }; // namespace sud::sol
