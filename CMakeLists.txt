@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.15.0)
 # set C++ standard
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
+set(Boost_NO_WARN_NEW_VERSIONS ON)
 
 project(sudoku VERSION 0.1.0)
 

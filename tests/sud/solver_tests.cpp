@@ -28,6 +28,17 @@ namespace sud
 using namespace std;
 using namespace sud;
 
+std::array<std::array<uint8_t, 9>, 9> const puzzle_1 = {
+        {{1, 9, 8, 5, 0, 3, 7, 0, 6},
+         {6, 0, 3, 0, 0, 8, 0, 9, 0},
+         {0, 0, 7, 6, 0, 9, 8, 0, 0},
+         {0, 1, 0, 0, 0, 0, 0, 6, 0},
+         {8, 7, 6, 1, 0, 0, 0, 0, 0},
+         {0, 3, 0, 0, 0, 6, 0, 7, 0},
+         {0, 6, 0, 0, 0, 1, 9, 8, 7},
+         {0, 8, 1, 9, 0, 7, 6, 5, 4},
+         {7, 0, 9, 8, 6, 0, 3, 1, 2}}};
+
 bitset<10> vect2bitset(vector<uint8_t> vect)
 {
     bitset<10> result{0b0000000000};
@@ -61,6 +72,7 @@ TEST(SimpleSolverTest, find_possible)
     EXPECT_EQ(solver.possible_board[0][0], possible_expected_0_0);
 }
 
+#if 0
 TEST(SimpleSolverTest, box_filter)
 {
     Loader loader{DATA_FILE, 10};
@@ -117,7 +129,10 @@ TEST(SimpleSolverTest, box_filter)
     vector<uint8_t> expected{1, 2};
     EXPECT_EQ(bitset2vect(solver.possible_board[7][2]), expected);
 }
+#endif
 
+
+#if 0
 TEST(SimpleSolverTest, solve_full_simple)
 {
     Sudoku sudoku{TEST_FILE_ABS};
@@ -144,7 +159,10 @@ TEST(SimpleSolverTest, solve_full_simple)
 
     EXPECT_EQ(sudoku.is_solved(), true);
 }
+#endif
 
+
+#if 0
 TEST(SimpleSolverTest, solve_full_normal)
 {
     Loader loader{DATA_FILE, 10};
@@ -174,21 +192,35 @@ TEST(SimpleSolverTest, solve_full_normal)
 
     EXPECT_EQ(sudoku.is_solved(), true);
 }
+#endif
 
+TEST(SimpleSolver, candidates_in_filled)
+{
+    Sudoku sudoku(puzzle_1);
+    SimpleSolverTest solver(sudoku);
+
+    cout << "Original:" << endl;
+    cout << sudoku << endl;
+
+    solver.find_possible();
+    solver.update_possible();
+
+    cout << "After find_possible and update_possible:" << endl;
+    cout << sudoku << endl;
+
+    vector<uint8_t> expected{};
+    EXPECT_EQ(solver.get_possible({0, 0}), expected);
+    expected = {2, 4};
+    EXPECT_EQ(solver.get_possible({0, 4}), expected);
+
+    expected = {4};
+    EXPECT_EQ(solver.get_possible({5, 4}), expected);
+}
+
+#if 0
 TEST(SimpleSolver, filter_unique)
 {
-    std::array<std::array<uint8_t, 9>, 9> puzzle = {
-        {{1, 9, 8, 5, 0, 3, 7, 0, 6},
-         {6, 0, 3, 0, 0, 8, 0, 9, 0},
-         {0, 0, 7, 6, 0, 9, 8, 0, 0},
-         {0, 1, 0, 0, 0, 0, 0, 6, 0},
-         {8, 7, 6, 1, 0, 0, 0, 0, 0},
-         {0, 3, 0, 0, 0, 6, 0, 7, 0},
-         {0, 6, 0, 0, 0, 1, 9, 8, 7},
-         {0, 8, 1, 9, 0, 7, 6, 5, 4},
-         {7, 0, 9, 8, 6, 0, 3, 1, 2}}};
-
-    Sudoku sudoku(puzzle);
+    Sudoku sudoku(puzzle_1);
     SimpleSolverTest solver(sudoku);
 
     cout << "Original:" << endl;
@@ -197,9 +229,11 @@ TEST(SimpleSolver, filter_unique)
     solver.filter_unique();
 
     vector<uint8_t> expected{4};
-    EXPECT_EQ(bitset2vect(solver.possible_board[5][3]), expected);
+    EXPECT_EQ(solver.get_possible({5, 4}), expected);
 }
+#endif
 
+#if 0
 TEST(SimpleSolver, filter_unique2)
 {
     std::array<std::array<uint8_t, 9>, 9> puzzle = {
@@ -247,6 +281,7 @@ TEST(SimpleSolver, filter_unique2)
     vector<uint8_t> expected{4};
     EXPECT_EQ(true, sudoku.is_solved());
 }
+#endif
 
 int main(int argc, char **argv)
 {

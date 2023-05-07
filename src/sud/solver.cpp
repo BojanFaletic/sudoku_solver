@@ -1,4 +1,5 @@
 #include "solver.hpp"
+#include "types.hpp"
 #include <algorithm>
 #include <cmath>
 #include <cassert>
@@ -315,7 +316,7 @@ namespace sud
                 }
 
                 possible_board[row][col][value] = false;
-                
+
             }
         }
     }
@@ -323,7 +324,7 @@ namespace sud
     void SimpleSolver::remove_possible_candidate_inside_box_col(const Point &point, const square_t value)
     {
         const Point block = point / SUDOKU_BOX_SIZE * SUDOKU_BOX_SIZE;
-        
+
         std::cout << fmt::format("remove_possible_candidate_inside_box_col: point: {}, value: {}\n", block, value);
         for (uint8_t row = block.row; row < block.row + SUDOKU_BOX_SIZE; row++)
         {
@@ -345,19 +346,19 @@ namespace sud
         {
             for (uint8_t col = 0; col < SUDOKU_SIZE; col++)
             {
-                
+
                 if (sudoku[{row, col}] != 0)
                 {
                     continue;
                 }
-                
+
 
                 // break at (3,5)
                 if (row == 3 && col == 5)
                 {
                     std::cout << "break\n";
                 }
-                
+
                 for (uint8_t number = 1; number < SUDOKU_POSSIBLE_NUMBERS; number++)
                 {
                     if (possible_board[row][col][number])
@@ -420,6 +421,19 @@ namespace sud
                 possible_board[point.row][point.col].reset();
             }
         }
+    }
+
+    std::vector<square_t> SimpleSolver::get_possible(const Point &point) const
+    {
+        std::vector<square_t> possible;
+        for (uint8_t number = 1; number < SUDOKU_POSSIBLE_NUMBERS; number++)
+        {
+            if (possible_board[point.row][point.col][number])
+            {
+                possible.push_back(number);
+            }
+        }
+        return possible;
     }
 
     status_e SimpleSolver::solve()

@@ -1,8 +1,8 @@
 #include <gtest/gtest.h>
 
-#include "Sudoku.hpp"
-#include "Loader.hpp"
-#include "Solver.hpp"
+#include "sudoku.hpp"
+#include "loader.hpp"
+#include "solver.hpp"
 #include <vector>
 #include <array>
 #include <fmt/format.h>

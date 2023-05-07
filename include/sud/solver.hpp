@@ -4,6 +4,7 @@
 #include "sudoku.hpp"
 #include <bitset>
 #include <array>
+#include <vector>
 
 namespace sud
 {
@@ -75,6 +76,8 @@ namespace sud
         bool unique_filter();
 
         void update_possible();
+
+        std::vector<square_t> get_possible(const Point &point) const;
 
         status_e solve() override;
     };
