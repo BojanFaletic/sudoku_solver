@@ -6,7 +6,7 @@
 #include <array>
 #include <vector>
 
-namespace sud
+namespace sud::sol
 {
 
     class Solver
@@ -20,10 +20,10 @@ namespace sud
         virtual status_e solve() = 0;
     };
 
-
     class SimpleSolver : public Solver
     {
         friend class SimpleSolverTest;
+
     private:
         using possible_t = std::array<std::bitset<SUDOKU_POSSIBLE_NUMBERS>, SUDOKU_SIZE>;
         std::array<possible_t, SUDOKU_SIZE> possible_board;
@@ -49,7 +49,6 @@ namespace sud
         static uint8_t freq_to_value(const std::array<count_t, SUDOKU_POSSIBLE_NUMBERS> &count);
         void update_freq(const Point &point, std::array<count_t, SUDOKU_POSSIBLE_NUMBERS> &count) const;
 
-
         bool is_number_possible(const Point &point, const square_t value) const;
         bool is_number_possible_row(const Point &point, const square_t value) const;
         bool is_number_possible_col(const Point &point, const square_t value) const;
@@ -71,7 +70,6 @@ namespace sud
         // if number is unique in a row/col/box, then it is the only possible number for that square
         void filter_unique();
 
-
         void find_possible();
         bool unique_filter();
 
@@ -82,4 +80,4 @@ namespace sud
         status_e solve() override;
     };
 
-}; // namespace sud
+}; // namespace sud::sol

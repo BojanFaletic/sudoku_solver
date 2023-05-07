@@ -9,7 +9,7 @@
 #include <bitset>
 #include <fmt/core.h>
 
-namespace sud
+namespace sud::sol
 {
     class SimpleSolverTest : public SimpleSolver
     {
@@ -27,6 +27,7 @@ namespace sud
 
 using namespace std;
 using namespace sud;
+using namespace sud::sol;
 
 std::array<std::array<uint8_t, 9>, 9> const puzzle_1 = {
         {{1, 9, 8, 5, 0, 3, 7, 0, 6},
@@ -70,6 +71,12 @@ TEST(SimpleSolverTest, find_possible)
 
     bitset<10> possible_expected_0_0{vect2bitset({2, 9})};
     EXPECT_EQ(solver.possible_board[0][0], possible_expected_0_0);
+}
+
+TEST(SimpleSolverTest, check_xy){
+    Sudoku sudoku{puzzle_1};
+    
+    EXPECT_EQ(sudoku[Point(7, 3)], 9);
 }
 
 #if 0
@@ -204,6 +211,7 @@ TEST(SimpleSolver, candidates_in_filled)
 
     solver.find_possible();
     solver.update_possible();
+    solver.filter_unique();
 
     cout << "After find_possible and update_possible:" << endl;
     cout << sudoku << endl;
@@ -214,7 +222,7 @@ TEST(SimpleSolver, candidates_in_filled)
     EXPECT_EQ(solver.get_possible({0, 4}), expected);
 
     expected = {4};
-    EXPECT_EQ(solver.get_possible({5, 4}), expected);
+    EXPECT_EQ(solver.get_possible({5, 3}), expected);
 }
 
 #if 0

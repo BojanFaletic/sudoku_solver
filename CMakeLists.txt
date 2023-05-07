@@ -22,6 +22,8 @@ add_definitions(-DTEST_FILE_ABS="${TEST_FILE_ABS}")
 
 # mark all .cpp files to be compiled
 include_directories(include/sud)
+include_directories(include/sud/sol)
+aux_source_directory(src/sud/sol SOURCES)
 aux_source_directory(src/sud SOURCES)
 
 # add the executable

@@ -9,6 +9,7 @@
 
 using namespace std;
 using namespace sud;
+using namespace sud::sol;
 
 TEST(Loader, constructor)
 {

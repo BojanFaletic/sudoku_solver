@@ -11,8 +11,8 @@
 
 using namespace std;
 using namespace sud;
+using namespace sud::sol;
 using namespace boost;
-
 
 int main()
 {

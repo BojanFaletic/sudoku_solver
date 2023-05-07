@@ -6,7 +6,7 @@
 #include <fmt/format.h>
 #include <iostream>
 
-namespace sud
+namespace sud::sol
 {
     Solver::Solver(Sudoku &sudoku) : sudoku(sudoku) {}
 

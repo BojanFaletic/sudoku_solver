@@ -9,7 +9,9 @@ find_package(GTest CONFIG REQUIRED)
 
 # mark all .cpp files to be compiled
 include_directories(../include/sud)
+include_directories(../include/sud/sod)
 aux_source_directory(../src/sud SOURCES2)
+aux_source_directory(../src/sud/sol SOURCES2)
 
 # add tests
 add_executable(loader_tests sud/loader_tests.cpp ${SOURCES2})
