@@ -12,6 +12,7 @@ namespace sud
 
         void zero_out_board();
         status_e read_from_CSV(const std::string &filename);
+        uint8_t count_missing() const;
 
     public:
         Sudoku();
@@ -22,7 +23,7 @@ namespace sud
         status_e save_to_CSV(const std::string &filename);
 
         // Check if the sudoku is solved
-        status_e check();
+        status_e check() const;
 
         // Getters and setters
         square_t get(const square_t row, const square_t col) const;
@@ -32,6 +33,7 @@ namespace sud
         void set(const Point &point, const square_t value);
 
         bool is_solved() const;
+        bool is_valid() const;
 
         // Print the sudoku board
         square_t operator[](const Point &point) const;

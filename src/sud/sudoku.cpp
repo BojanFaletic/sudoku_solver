@@ -93,161 +93,12 @@ namespace sud
         return SUCCESS;
     }
 
-    void erase_missing_Y_dir(missing_full_t &missing, square_t col, uint8_t value)
+    bool Sudoku::is_valid() const
     {
-        for (square_t row = 0; row < SUDOKU_SIZE; row++)
-        {
-            missing[row][col].erase(value);
-        }
+        return check() == SUCCESS;
     }
 
-    void erase_missing_X_dir(missing_full_t &missing, square_t row, uint8_t value)
-    {
-        for (square_t col = 0; col < SUDOKU_SIZE; col++)
-        {
-            auto el = std::find(missing[row][col].begin(), missing[row][col].end(), value);
-            if (el != missing[row][col].end())
-            {
-                missing[row][col].erase(el);
-            }
-        }
-    }
-
-    void erase_missing_box(missing_full_t &missing, square_t row, square_t col, uint8_t value)
-    {
-        const square_t box_row = (row / SUDOKU_BOX_SIZE) * SUDOKU_BOX_SIZE;
-        const square_t box_col = (col / SUDOKU_BOX_SIZE) * SUDOKU_BOX_SIZE;
-        for (square_t r = box_row; r < box_row + SUDOKU_BOX_SIZE; r++)
-        {
-            for (square_t c = box_col; c < box_col + SUDOKU_BOX_SIZE; c++)
-            {
-                missing[r][c].erase(value);
-            }
-        }
-    }
-
-    bool solve_X_dir(sudoku_t &sud, square_t row, missing_full_t &missing)
-    {
-        std::array<std::pair<uint8_t, square_t>, SUDOKU_POSSIBLE_NUMBERS> hist;
-        for_each(hist.begin(), hist.end(), [](std::pair<uint8_t, square_t> &item)
-                 { item.first = 0; });
-
-        bool result = false;
-        for (square_t col = 0; col < SUDOKU_SIZE; col++)
-        {
-            if (sud[row][col] == 0)
-            {
-                for (const auto &item : missing[row][col])
-                {
-                    hist[item].first++;
-                    hist[item].second = col;
-                }
-            }
-        }
-
-        for (uint8_t i = 1; i < SUDOKU_POSSIBLE_NUMBERS; i++)
-        {
-            if (hist[i].first == 1)
-            {
-                BOOST_LOG_TRIVIAL(trace) << fmt::format("Inserting {} in ({}, {})\n", i, row, hist[i].second);
-                sud[row][hist[i].second] = i;
-                missing[row][hist[i].second].clear();
-                erase_missing_X_dir(missing, row, i);
-                result = true;
-            }
-        }
-        return result;
-    }
-
-    bool solve_Y_dir(sudoku_t &sud, square_t col, missing_full_t &missing)
-    {
-        std::array<std::pair<uint8_t, square_t>, SUDOKU_POSSIBLE_NUMBERS> hist;
-        for_each(hist.begin(), hist.end(), [](std::pair<uint8_t, square_t> &item)
-                 { item.first = 0; });
-
-        bool result = false;
-        for (square_t row = 0; row < SUDOKU_SIZE; row++)
-        {
-            if (sud[row][col] == 0)
-            {
-                for (const auto &item : missing[row][col])
-                {
-                    hist[item].first++;
-                    hist[item].second = row;
-                }
-            }
-        }
-
-        for (uint8_t i = 1; i < SUDOKU_POSSIBLE_NUMBERS; i++)
-        {
-            if (hist[i].first == 1)
-            {
-                BOOST_LOG_TRIVIAL(trace) << fmt::format("Inserting {} in ({}, {})\n", i, hist[i].second, col);
-                sud[hist[i].second][col] = i;
-                missing[hist[i].second][col].clear();
-                erase_missing_Y_dir(missing, col, i);
-                result = true;
-            }
-        }
-        return result;
-    }
-
-    bool solve_box(sudoku_t &sud, square_t row, square_t col, missing_full_t &missing)
-    {
-        std::array<std::pair<uint8_t, Point>, SUDOKU_POSSIBLE_NUMBERS> hist;
-        for_each(hist.begin(), hist.end(), [](std::pair<uint8_t, Point> &item)
-                 { item.first = 0; });
-
-        bool result = false;
-        const square_t box_row = (row / SUDOKU_BOX_SIZE) * SUDOKU_BOX_SIZE;
-        const square_t box_col = (col / SUDOKU_BOX_SIZE) * SUDOKU_BOX_SIZE;
-
-        for (square_t r = box_row; r < box_row + SUDOKU_BOX_SIZE; r++)
-        {
-            for (square_t c = box_col; c < box_col + SUDOKU_BOX_SIZE; c++)
-            {
-                if (sud[r][c] == 0)
-                {
-                    for (const auto &item : missing[r][c])
-                    {
-                        hist[item].first++;
-                        hist[item].second = Point(r, c);
-                    }
-                }
-            }
-        }
-
-        for (uint8_t i = 1; i < SUDOKU_POSSIBLE_NUMBERS; i++)
-        {
-            if (hist[i].first == 1)
-            {
-                BOOST_LOG_TRIVIAL(trace) << fmt::format("Inserting {} in ({}, {})\n", i, hist[i].second.row, hist[i].second.col);
-                sud[hist[i].second.row][hist[i].second.col] = i;
-                missing[hist[i].second.row][hist[i].second.col].clear();
-                erase_missing_box(missing, hist[i].second.row, hist[i].second.col, i);
-                result = true;
-            }
-        }
-        return result;
-    }
-
-    uint8_t count_missing(const Sudoku &sud)
-    {
-        uint8_t n_unsolved = 0;
-        for (square_t row = 0; row < SUDOKU_SIZE; row++)
-        {
-            for (square_t col = 0; col < SUDOKU_SIZE; col++)
-            {
-                if (sud.get(row, col) == 0)
-                {
-                    n_unsolved++;
-                }
-            }
-        }
-        return n_unsolved;
-    }
-
-    status_e Sudoku::check()
+    status_e Sudoku::check() const
     {
         // check rows
         for (square_t row = 0; row < SUDOKU_SIZE; row++)
@@ -308,9 +159,26 @@ namespace sud
         return SUCCESS;
     }
 
+    uint8_t Sudoku::count_missing() const
+    {
+        uint8_t count = 0;
+        for (const Point &pt : PointIterator())
+        {
+            if (board[pt.row][pt.col] == 0)
+            {
+                count++;
+            }
+        }
+        return count;
+    }
+
     bool Sudoku::is_solved() const
     {
-        return (count_missing(*this) == 0);
+        if (count_missing() != 0)
+        {
+            return false;
+        }
+        return check() == SUCCESS;
     }
 
     status_e Sudoku::save_to_CSV(const string &filename)

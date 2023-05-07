@@ -84,15 +84,38 @@ TEST(SimpleSolverTest, box_filter)
         cout << sudoku << endl;
     }
 
-    cout << "Before unique_filter_box" << endl;
+    // test box filter
+    for (int i = 0; i < 10; i++)
+    {
+        solver.find_possible();
+        bool res = solver.unique_filter_box();
+        if (!res)
+        {
+            break;
+        }
+        cout << fmt::format("After find_possible and unique_filter_box: {}", i) << endl;
+        cout << sudoku << endl;
+    }
 
-    solver.find_possible();
-    solver.unique_filter_box();
+    // test row filter
+    for (int i = 0; i < 10; i++)
+    {
+        solver.find_possible();
+        bool res = solver.unique_filter();
+        if (!res)
+        {
+            break;
+        }
+        cout << fmt::format("After find_possible and unique_filter: {}", i) << endl;
+        cout << sudoku << endl;
+    }
+
+    cout << "Final:" << endl;
     cout << sudoku << endl;
 
     solver.find_possible();
-    vector<uint8_t> expected{};
-    EXPECT_EQ(bitset2vect(solver.possible_board[3][7]), expected);
+    vector<uint8_t> expected{1, 2};
+    EXPECT_EQ(bitset2vect(solver.possible_board[7][2]), expected);
 }
 
 TEST(SimpleSolverTest, solve_full_simple)
@@ -150,6 +173,79 @@ TEST(SimpleSolverTest, solve_full_normal)
     }
 
     EXPECT_EQ(sudoku.is_solved(), true);
+}
+
+TEST(SimpleSolver, filter_unique)
+{
+    std::array<std::array<uint8_t, 9>, 9> puzzle = {
+        {{1, 9, 8, 5, 0, 3, 7, 0, 6},
+         {6, 0, 3, 0, 0, 8, 0, 9, 0},
+         {0, 0, 7, 6, 0, 9, 8, 0, 0},
+         {0, 1, 0, 0, 0, 0, 0, 6, 0},
+         {8, 7, 6, 1, 0, 0, 0, 0, 0},
+         {0, 3, 0, 0, 0, 6, 0, 7, 0},
+         {0, 6, 0, 0, 0, 1, 9, 8, 7},
+         {0, 8, 1, 9, 0, 7, 6, 5, 4},
+         {7, 0, 9, 8, 6, 0, 3, 1, 2}}};
+
+    Sudoku sudoku(puzzle);
+    SimpleSolverTest solver(sudoku);
+
+    cout << "Original:" << endl;
+    cout << sudoku << endl;
+
+    solver.filter_unique();
+
+    vector<uint8_t> expected{4};
+    EXPECT_EQ(bitset2vect(solver.possible_board[5][3]), expected);
+}
+
+TEST(SimpleSolver, filter_unique2)
+{
+    std::array<std::array<uint8_t, 9>, 9> puzzle = {
+        {{1, 9, 8, 5, 0, 3, 7, 0, 6},
+         {6, 0, 3, 0, 0, 8, 0, 9, 0},
+         {0, 0, 7, 6, 0, 9, 8, 0, 0},
+         {0, 1, 0, 0, 0, 0, 0, 6, 0},
+         {8, 7, 6, 1, 0, 0, 0, 0, 0},
+         {0, 3, 0, 0, 0, 6, 0, 7, 0},
+         {0, 6, 0, 0, 0, 1, 9, 8, 7},
+         {0, 8, 1, 9, 0, 7, 6, 5, 4},
+         {7, 0, 9, 8, 6, 0, 3, 1, 2}}};
+
+    Sudoku sudoku(puzzle);
+    SimpleSolverTest solver(sudoku);
+
+    cout << "Original:" << endl;
+    cout << sudoku << endl;
+
+    solver.filter_unique();
+
+    for (int i = 0; i < 10; i++)
+    {
+        if (i != 0){
+            solver.find_possible();
+        }
+        solver.unique_filter();
+        solver.update_possible();
+
+        cout << fmt::format("After find_possible and update_possible: {}", i) << endl;
+        cout << sudoku << endl;
+
+        ASSERT_EQ(sudoku.is_valid(), true);
+        EXPECT_EQ(sudoku.check(), 0);
+
+        if (sudoku.is_solved())
+        {
+            break;
+        }
+    }
+
+    cout << "Final:" << endl;
+    cout << sudoku << endl;
+
+    vector<uint8_t> expected{4};
+    EXPECT_EQ(true, sudoku.is_solved());
 }
 
 int main(int argc, char **argv)

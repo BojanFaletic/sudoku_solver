@@ -10,6 +10,11 @@ namespace sud
         return Point(row * value, col * value);
     }
 
+    Point Point::operator/(const square_t &value) const
+    {
+        return Point(row / value, col / value);
+    }
+
     Point Point::operator+(const Point &other) const
     {
         return Point(row + other.row, col + other.col);
@@ -25,7 +30,6 @@ namespace sud
     {
         return row == other.row && col == other.col;
     }
-
 
     // PointIterator
     PointIterator &PointIterator::operator++()

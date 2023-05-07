@@ -6,6 +6,7 @@
 #include <set>
 #include <cassert>
 #include <sstream>
+#include <fmt/format.h>
 
 #define assertm(exp, msg) assert(((void)msg, exp))
 
@@ -73,6 +74,7 @@ namespace sud
 
         // operators
         Point operator*(const square_t &value) const;
+        Point operator/(const square_t &value) const;
         Point operator+(const Point &other) const;
         bool operator==(const Point &other) const;
         std::ostream &operator<<(std::ostream &os) const;
@@ -106,3 +108,18 @@ namespace sud
 
     using solve_candidates_t = std::array<std::array<missing_t, SUDOKU_SIZE>, SUDOKU_SIZE>;
 }; // namespace sud
+
+template <>
+struct fmt::formatter<sud::Point>
+{
+    constexpr auto parse(format_parse_context &ctx)
+    {
+        return ctx.begin();
+    }
+    
+    template <typename FormatContext>
+    auto format(const sud::Point &p, FormatContext &ctx)
+    {
+        return format_to(ctx.out(), "({}, {})", p.row, p.col);
+    }
+};

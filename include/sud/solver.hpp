@@ -48,12 +48,28 @@ namespace sud
         static uint8_t freq_to_value(const std::array<count_t, SUDOKU_POSSIBLE_NUMBERS> &count);
         void update_freq(const Point &point, std::array<count_t, SUDOKU_POSSIBLE_NUMBERS> &count) const;
 
+
+        bool is_number_possible(const Point &point, const square_t value) const;
+        bool is_number_possible_row(const Point &point, const square_t value) const;
+        bool is_number_possible_col(const Point &point, const square_t value) const;
+        bool is_number_possible_box(const Point &point, const square_t value) const;
+
+        // used for detecting unique numbers
+        bool is_number_possible_outside_box_row(const Point &point, const square_t value) const;
+        bool is_number_possible_outside_box_col(const Point &point, const square_t value) const;
+        void remove_possible_candidate_inside_box_row(const Point &point, const square_t value);
+        void remove_possible_candidate_inside_box_col(const Point &point, const square_t value);
+
     public:
         SimpleSolver(Sudoku &sudoku);
 
         uint8_t missing_number(const Point &point);
 
         bool basic_solve();
+
+        // if number is unique in a row/col/box, then it is the only possible number for that square
+        void filter_unique();
+
 
         void find_possible();
         bool unique_filter();
