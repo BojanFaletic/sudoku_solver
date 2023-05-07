@@ -4,12 +4,12 @@
 namespace sud::sol
 {
 
-    SimpleSolver::SimpleSolver(Sudoku &sudoku) : Solver(sudoku)
+    Simple::Simple(Sudoku &sudoku) : Solver(sudoku)
     {
         find_possible();
     }
 
-    SimpleSolver::possible_t SimpleSolver::row_wise_possible()
+    Simple::possible_t Simple::row_wise_possible()
     {
         possible_t poss;
         for (square_t row = 0; row < SUDOKU_SIZE; row++)
@@ -23,7 +23,7 @@ namespace sud::sol
         return poss;
     }
 
-    SimpleSolver::possible_t SimpleSolver::col_wise_possible()
+    Simple::possible_t Simple::col_wise_possible()
     {
         possible_t poss;
         for (square_t col = 0; col < SUDOKU_SIZE; col++)
@@ -37,7 +37,7 @@ namespace sud::sol
         return poss;
     }
 
-    SimpleSolver::possible_t SimpleSolver::box_wise_possible()
+    Simple::possible_t Simple::box_wise_possible()
     {
         possible_t poss;
         for (uint8_t block_idx = 0; block_idx < SUDOKU_SIZE; block_idx++)
@@ -57,7 +57,7 @@ namespace sud::sol
         return poss;
     }
 
-    uint8_t SimpleSolver::missing_number(const Point &point)
+    uint8_t Simple::missing_number(const Point &point)
     {
         if (possible_board[point.row][point.col].count() == 1)
         {
@@ -72,7 +72,7 @@ namespace sud::sol
         return 0;
     }
 
-    bool SimpleSolver::basic_solve()
+    bool Simple::basic_solve()
     {
         bool res = false;
 
@@ -91,7 +91,7 @@ namespace sud::sol
         return res;
     }
 
-    void SimpleSolver::insert(const Point &point, const square_t value)
+    void Simple::insert(const Point &point, const square_t value)
     {
         std::cout << fmt::format("Inserting {} at ({}, {})\n", value, point.row, point.col);
         assertm(sudoku[point] == 0, "Trying to insert a value in a non-empty square");
@@ -99,7 +99,7 @@ namespace sud::sol
         // todo update possible_board
     }
 
-    bool SimpleSolver::unique_filter_row()
+    bool Simple::unique_filter_row()
     {
         bool res = false;
         for (square_t row = 0; row < SUDOKU_SIZE; row++)
@@ -122,7 +122,7 @@ namespace sud::sol
         return res;
     }
 
-    bool SimpleSolver::unique_filter_col()
+    bool Simple::unique_filter_col()
     {
         bool res = false;
         for (square_t col = 0; col < SUDOKU_SIZE; col++)
@@ -145,7 +145,7 @@ namespace sud::sol
         return res;
     }
 
-    uint8_t SimpleSolver::freq_to_value(const std::array<count_t, SUDOKU_POSSIBLE_NUMBERS> &count)
+    uint8_t Simple::freq_to_value(const std::array<count_t, SUDOKU_POSSIBLE_NUMBERS> &count)
     {
         for (uint8_t i = 1; i < SUDOKU_POSSIBLE_NUMBERS; i++)
         {
@@ -157,7 +157,7 @@ namespace sud::sol
         return 0;
     }
 
-    void SimpleSolver::update_freq(const Point &point, std::array<count_t, SUDOKU_POSSIBLE_NUMBERS> &count) const
+    void Simple::update_freq(const Point &point, std::array<count_t, SUDOKU_POSSIBLE_NUMBERS> &count) const
     {
         for (uint8_t i = 1; i < SUDOKU_POSSIBLE_NUMBERS; i++)
         {
@@ -169,7 +169,7 @@ namespace sud::sol
         }
     }
 
-    bool SimpleSolver::unique_filter_box()
+    bool Simple::unique_filter_box()
     {
         bool res = false;
         for (uint8_t block_idx = 0; block_idx < SUDOKU_SIZE; block_idx++)
@@ -202,7 +202,7 @@ namespace sud::sol
         return res;
     }
 
-    bool SimpleSolver::unique_filter()
+    bool Simple::unique_filter()
     {
         bool res = false;
         res |= unique_filter_row();
@@ -211,7 +211,7 @@ namespace sud::sol
         return res;
     }
 
-    bool SimpleSolver::is_number_possible_row(const Point &point, const square_t value) const
+    bool Simple::is_number_possible_row(const Point &point, const square_t value) const
     {
         for (uint8_t col = 0; col < SUDOKU_SIZE; col++)
         {
@@ -223,7 +223,7 @@ namespace sud::sol
         return true;
     }
 
-    bool SimpleSolver::is_number_possible_col(const Point &point, const square_t value) const
+    bool Simple::is_number_possible_col(const Point &point, const square_t value) const
     {
         for (uint8_t row = 0; row < SUDOKU_SIZE; row++)
         {
@@ -235,7 +235,7 @@ namespace sud::sol
         return true;
     }
 
-    bool SimpleSolver::is_number_possible_box(const Point &point, const square_t value) const
+    bool Simple::is_number_possible_box(const Point &point, const square_t value) const
     {
         const Point block = point / SUDOKU_BOX_SIZE * SUDOKU_BOX_SIZE;
         for (uint8_t i = 0; i < SUDOKU_BOX_SIZE; i++)
@@ -252,7 +252,7 @@ namespace sud::sol
         return true;
     }
 
-    bool SimpleSolver::is_number_possible(const Point &point, const square_t value) const
+    bool Simple::is_number_possible(const Point &point, const square_t value) const
     {
         bool possible = true;
         possible &= is_number_possible_row(point, value);
@@ -261,7 +261,7 @@ namespace sud::sol
         return possible;
     }
 
-    bool SimpleSolver::is_number_possible_outside_box_row(const Point &point, const square_t value) const
+    bool Simple::is_number_possible_outside_box_row(const Point &point, const square_t value) const
     {
         const Point block = point / SUDOKU_BOX_SIZE * SUDOKU_BOX_SIZE;
         for (uint8_t row = 0; row < SUDOKU_SIZE; row++)
@@ -278,7 +278,7 @@ namespace sud::sol
         return false;
     }
 
-    bool SimpleSolver::is_number_possible_outside_box_col(const Point &point, const square_t value) const
+    bool Simple::is_number_possible_outside_box_col(const Point &point, const square_t value) const
     {
         const Point block = point / SUDOKU_BOX_SIZE * SUDOKU_BOX_SIZE;
         for (uint8_t col = 0; col < SUDOKU_SIZE; col++)
@@ -295,7 +295,7 @@ namespace sud::sol
         return false;
     }
 
-    void SimpleSolver::remove_possible_candidate_inside_box_row(const Point &point, const square_t value)
+    void Simple::remove_possible_candidate_inside_box_row(const Point &point, const square_t value)
     {
         const Point block = point / SUDOKU_BOX_SIZE * SUDOKU_BOX_SIZE;
 
@@ -318,7 +318,7 @@ namespace sud::sol
         }
     }
 
-    void SimpleSolver::remove_possible_candidate_inside_box_col(const Point &point, const square_t value)
+    void Simple::remove_possible_candidate_inside_box_col(const Point &point, const square_t value)
     {
         const Point block = point / SUDOKU_BOX_SIZE * SUDOKU_BOX_SIZE;
 
@@ -336,7 +336,7 @@ namespace sud::sol
         }
     }
 
-    void SimpleSolver::filter_unique()
+    void Simple::filter_unique()
     {
         // check if the number must be in a row
         for (uint8_t row = 0; row < SUDOKU_SIZE; row++)
@@ -381,7 +381,7 @@ namespace sud::sol
         }
     }
 
-    void SimpleSolver::update_possible()
+    void Simple::update_possible()
     {
         for (square_t row = 0; row < SUDOKU_SIZE; row++)
         {
@@ -400,7 +400,7 @@ namespace sud::sol
         }
     }
 
-    void SimpleSolver::find_possible()
+    void Simple::find_possible()
     {
         const possible_t row_wise = row_wise_possible();
         const possible_t col_wise = col_wise_possible();
@@ -419,7 +419,7 @@ namespace sud::sol
         }
     }
 
-    std::vector<square_t> SimpleSolver::get_possible(const Point &point) const
+    std::vector<square_t> Simple::get_possible(const Point &point) const
     {
         std::vector<square_t> possible;
         for (uint8_t number = 1; number < SUDOKU_POSSIBLE_NUMBERS; number++)
@@ -432,7 +432,7 @@ namespace sud::sol
         return possible;
     }
 
-    status_e SimpleSolver::solve()
+    status_e Simple::solve()
     {
         unique_filter();
         return SUCCESS;

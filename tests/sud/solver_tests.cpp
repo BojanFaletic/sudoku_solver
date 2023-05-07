@@ -12,16 +12,16 @@
 
 namespace sud::sol
 {
-    class SimpleSolverTest : public SimpleSolver
+    class SimpleTest : public Simple
     {
     public:
-        using SimpleSolver::find_possible;
-        using SimpleSolver::possible_board;
-        using SimpleSolver::SimpleSolver;
+        using Simple::find_possible;
+        using Simple::possible_board;
+        using Simple::Simple;
 
-        using SimpleSolver::unique_filter_box;
-        using SimpleSolver::unique_filter_col;
-        using SimpleSolver::unique_filter_row;
+        using Simple::unique_filter_box;
+        using Simple::unique_filter_col;
+        using Simple::unique_filter_row;
     };
 
 }
@@ -64,28 +64,28 @@ vector<uint8_t> bitset2vect(bitset<10> bitset)
     return result;
 }
 
-TEST(SimpleSolverTest, find_possible)
+TEST(SimpleTest, find_possible)
 {
     Sudoku sudoku{TEST_FILE_ABS};
-    SimpleSolverTest solver(sudoku);
+    SimpleTest solver(sudoku);
     solver.find_possible();
 
     bitset<10> possible_expected_0_0{vect2bitset({2, 9})};
     EXPECT_EQ(solver.possible_board[0][0], possible_expected_0_0);
 }
 
-TEST(SimpleSolverTest, check_xy){
+TEST(SimpleTest, check_xy){
     Sudoku sudoku{puzzle_1};
     
     EXPECT_EQ(sudoku[Point(7, 3)], 9);
 }
 
 #if 0
-TEST(SimpleSolverTest, box_filter)
+TEST(SimpleTest, box_filter)
 {
     Loader loader{DATA_FILE, 10};
     Sudoku sudoku{loader.get_puzzle(1).value()};
-    SimpleSolverTest solver(sudoku);
+    SimpleTest solver(sudoku);
 
     cout << "Original:" << endl;
     cout << sudoku << endl;
@@ -141,10 +141,10 @@ TEST(SimpleSolverTest, box_filter)
 
 
 #if 0
-TEST(SimpleSolverTest, solve_full_simple)
+TEST(SimpleTest, solve_full_simple)
 {
     Sudoku sudoku{TEST_FILE_ABS};
-    SimpleSolverTest solver(sudoku);
+    SimpleTest solver(sudoku);
 
     cout << "Original:" << endl;
     cout << sudoku << endl;
@@ -171,11 +171,11 @@ TEST(SimpleSolverTest, solve_full_simple)
 
 
 #if 0
-TEST(SimpleSolverTest, solve_full_normal)
+TEST(SimpleTest, solve_full_normal)
 {
     Loader loader{DATA_FILE, 10};
     Sudoku sudoku(loader.get_puzzle(1).value());
-    SimpleSolverTest solver(sudoku);
+    SimpleTest solver(sudoku);
 
     cout << "Original:" << endl;
     cout << sudoku << endl;
@@ -202,10 +202,10 @@ TEST(SimpleSolverTest, solve_full_normal)
 }
 #endif
 
-TEST(SimpleSolver, candidates_in_filled)
+TEST(Simple, candidates_in_filled)
 {
     Sudoku sudoku(puzzle_1);
-    SimpleSolverTest solver(sudoku);
+    SimpleTest solver(sudoku);
 
     cout << "Original:" << endl;
     cout << sudoku << endl;
@@ -227,10 +227,10 @@ TEST(SimpleSolver, candidates_in_filled)
 }
 
 #if 0
-TEST(SimpleSolver, filter_unique)
+TEST(Simple, filter_unique)
 {
     Sudoku sudoku(puzzle_1);
-    SimpleSolverTest solver(sudoku);
+    SimpleTest solver(sudoku);
 
     cout << "Original:" << endl;
     cout << sudoku << endl;
@@ -243,7 +243,7 @@ TEST(SimpleSolver, filter_unique)
 #endif
 
 #if 0
-TEST(SimpleSolver, filter_unique2)
+TEST(Simple, filter_unique2)
 {
     std::array<std::array<uint8_t, 9>, 9> puzzle = {
         {{1, 9, 8, 5, 0, 3, 7, 0, 6},
@@ -257,7 +257,7 @@ TEST(SimpleSolver, filter_unique2)
          {7, 0, 9, 8, 6, 0, 3, 1, 2}}};
 
     Sudoku sudoku(puzzle);
-    SimpleSolverTest solver(sudoku);
+    SimpleTest solver(sudoku);
 
     cout << "Original:" << endl;
     cout << sudoku << endl;

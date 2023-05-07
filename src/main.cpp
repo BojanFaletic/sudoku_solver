@@ -28,7 +28,7 @@ int main()
     {
         cout << fmt::format("Solving puzzle {} with difficulty {}", sudoku.id, sudoku.difficulty.value_or(-1)) << endl;
         Sudoku s{sudoku.puzzle};
-        SimpleSolver solver{s};
+        Simple solver{s};
         solver.solve();
         cout << s << endl;
     }
@@ -37,7 +37,7 @@ int main()
     cout << sudoku << endl;
 
     cout << "Solving..." << endl;
-    SimpleSolver solver{sudoku};
+    Simple solver{sudoku};
     solver.solve();
     cout << "Done" << endl;
     cout << "Final board:" << endl;

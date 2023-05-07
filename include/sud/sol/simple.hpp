@@ -4,9 +4,9 @@
 
 namespace sud::sol
 {
-    class SimpleSolver : public Solver
+    class Simple : public Solver
     {
-        friend class SimpleSolverTest;
+        friend class SimpleTest;
 
     private:
         using possible_t = std::array<std::bitset<SUDOKU_POSSIBLE_NUMBERS>, SUDOKU_SIZE>;
@@ -45,7 +45,7 @@ namespace sud::sol
         void remove_possible_candidate_inside_box_col(const Point &point, const square_t value);
 
     public:
-        SimpleSolver(Sudoku &sudoku);
+        Simple(Sudoku &sudoku);
 
         uint8_t missing_number(const Point &point);
 
