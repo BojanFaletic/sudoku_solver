@@ -24,7 +24,7 @@ TEST(Loader, load)
     {
         cout << fmt::format("Solving puzzle {} with difficulty {}", sudoku.id, sudoku.difficulty.value_or(-1)) << endl;
         Sudoku s{sudoku.puzzle};
-        Simple solver{s};
+        SimpleSolver solver{s};
         solver.solve();
         cout << s << endl;
     }

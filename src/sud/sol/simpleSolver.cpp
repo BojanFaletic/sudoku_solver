@@ -1,15 +1,15 @@
-#include "sud//sol/simple.hpp"
+#include "sud//sol/simpleSolver.hpp"
 #include <iostream>
 #include <cmath>
 
 namespace sud::sol
 {
 
-    Simple::Simple(Sudoku &sudoku) : Common(sudoku)
+    SimpleSolver::SimpleSolver(Sudoku &sudoku) : Common(sudoku)
     {
     }
 
-    Simple::possible_array_t Simple::row_wise_possible()
+    SimpleSolver::possible_array_t SimpleSolver::row_wise_possible()
     {
         possible_array_t poss;
         for (square_t row = 0; row < SUDOKU_SIZE; row++)
@@ -23,7 +23,7 @@ namespace sud::sol
         return poss;
     }
 
-    Simple::possible_array_t Simple::col_wise_possible()
+    SimpleSolver::possible_array_t SimpleSolver::col_wise_possible()
     {
         possible_array_t poss;
         for (square_t col = 0; col < SUDOKU_SIZE; col++)
@@ -37,7 +37,7 @@ namespace sud::sol
         return poss;
     }
 
-    Simple::possible_array_t Simple::box_wise_possible()
+    SimpleSolver::possible_array_t SimpleSolver::box_wise_possible()
     {
         possible_array_t poss;
         for (uint8_t block_idx = 0; block_idx < SUDOKU_SIZE; block_idx++)
@@ -57,22 +57,7 @@ namespace sud::sol
         return poss;
     }
 
-    uint8_t Simple::missing_number(const Point &point)
-    {
-        if (possible[point].count() == 1)
-        {
-            for (uint8_t i = 1; i < SUDOKU_POSSIBLE_NUMBERS; i++)
-            {
-                if (possible[point][i])
-                {
-                    return i;
-                }
-            }
-        }
-        return 0;
-    }
-
-    bool Simple::basic_solve()
+    bool SimpleSolver::basic_solve()
     {
         bool res = false;
 
@@ -91,15 +76,7 @@ namespace sud::sol
         return res;
     }
 
-    void Simple::insert(const Point &point, const square_t value)
-    {
-        std::cout << fmt::format("Inserting {} at ({}, {})\n", value, point.row, point.col);
-        assertm(sudoku[point] == 0, "Trying to insert a value in a non-empty square");
-        sudoku[point] = value;
-        // todo update possible_board
-    }
-
-    bool Simple::unique_filter_row()
+    bool SimpleSolver::unique_filter_row()
     {
         bool res = false;
         for (square_t row = 0; row < SUDOKU_SIZE; row++)
@@ -122,7 +99,7 @@ namespace sud::sol
         return res;
     }
 
-    bool Simple::unique_filter_col()
+    bool SimpleSolver::unique_filter_col()
     {
         bool res = false;
         for (square_t col = 0; col < SUDOKU_SIZE; col++)
@@ -145,7 +122,7 @@ namespace sud::sol
         return res;
     }
 
-    uint8_t Simple::freq_to_value(const std::array<count_t, SUDOKU_POSSIBLE_NUMBERS> &count)
+    uint8_t SimpleSolver::freq_to_value(const std::array<count_t, SUDOKU_POSSIBLE_NUMBERS> &count)
     {
         for (uint8_t i = 1; i < SUDOKU_POSSIBLE_NUMBERS; i++)
         {
@@ -157,7 +134,7 @@ namespace sud::sol
         return 0;
     }
 
-    void Simple::update_freq(const Point &point, std::array<count_t, SUDOKU_POSSIBLE_NUMBERS> &count) const
+    void SimpleSolver::update_freq(const Point &point, std::array<count_t, SUDOKU_POSSIBLE_NUMBERS> &count) const
     {
         for (uint8_t i = 1; i < SUDOKU_POSSIBLE_NUMBERS; i++)
         {
@@ -169,7 +146,7 @@ namespace sud::sol
         }
     }
 
-    bool Simple::unique_filter_box()
+    bool SimpleSolver::unique_filter_box()
     {
         bool res = false;
         for (uint8_t block_idx = 0; block_idx < SUDOKU_SIZE; block_idx++)
@@ -202,7 +179,7 @@ namespace sud::sol
         return res;
     }
 
-    bool Simple::unique_filter()
+    bool SimpleSolver::unique_filter()
     {
         bool res = false;
         res |= unique_filter_row();
@@ -211,7 +188,7 @@ namespace sud::sol
         return res;
     }
 
-    void Simple::update_possible()
+    void SimpleSolver::update_possible()
     {
         for (square_t row = 0; row < SUDOKU_SIZE; row++)
         {
@@ -230,7 +207,7 @@ namespace sud::sol
         }
     }
 
-    void Simple::find_possible()
+    void SimpleSolver::find_possible()
     {
         const possible_array_t row_wise = row_wise_possible();
         const possible_array_t col_wise = col_wise_possible();
@@ -251,7 +228,7 @@ namespace sud::sol
 
 
 
-    status_e Simple::solve()
+    status_e SimpleSolver::solve()
     {
         unique_filter();
         return SUCCESS;

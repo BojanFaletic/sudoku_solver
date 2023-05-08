@@ -1,18 +1,18 @@
-#include "sud/sol/must.hpp"
+#include "sud/sol/mustSolver.hpp"
 #include <iostream>
 
 namespace sud::sol
 {
-    Must::Must(Sudoku &sudoku) : Common(sudoku)
+    MustSolver::MustSolver(Sudoku &sudoku) : Common(sudoku)
     {
     }
 
-    bool Must::solve()
+    bool MustSolver::solve()
     {
         return false;
     }
 
-    bool Must::is_number_possible_outside_box_row(const Point &point, const square_t value) const
+    bool MustSolver::is_number_possible_outside_box_row(const Point &point, const square_t value) const
     {
         const Point block = point / SUDOKU_BOX_SIZE * SUDOKU_BOX_SIZE;
         for (uint8_t row = 0; row < SUDOKU_SIZE; row++)
@@ -29,7 +29,7 @@ namespace sud::sol
         return false;
     }
 
-    bool Must::is_number_possible_outside_box_col(const Point &point, const square_t value) const
+    bool MustSolver::is_number_possible_outside_box_col(const Point &point, const square_t value) const
     {
         const Point block = point / SUDOKU_BOX_SIZE * SUDOKU_BOX_SIZE;
         for (uint8_t col = 0; col < SUDOKU_SIZE; col++)
@@ -46,7 +46,7 @@ namespace sud::sol
         return false;
     }
 
-    void Must::remove_possible_candidate_inside_box_row(const Point &point, const square_t value)
+    void MustSolver::remove_possible_candidate_inside_box_row(const Point &point, const square_t value)
     {
         const Point block = point / SUDOKU_BOX_SIZE * SUDOKU_BOX_SIZE;
 
@@ -69,7 +69,7 @@ namespace sud::sol
         }
     }
 
-    void Must::remove_possible_candidate_inside_box_col(const Point &point, const square_t value)
+    void MustSolver::remove_possible_candidate_inside_box_col(const Point &point, const square_t value)
     {
         const Point block = point / SUDOKU_BOX_SIZE * SUDOKU_BOX_SIZE;
 
@@ -87,7 +87,7 @@ namespace sud::sol
         }
     }
 
-    void Must::filter_unique()
+    void MustSolver::filter_unique()
     {
         // check if the number must be in a row
         for (uint8_t row = 0; row < SUDOKU_SIZE; row++)

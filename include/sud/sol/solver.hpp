@@ -2,8 +2,8 @@
 
 #include "sud/types.hpp"
 #include "sud/sol/possible.hpp"
-#include "sud/sol/simple.hpp"
-#include "sud/sol/must.hpp"
+#include "sud/sol/simpleSolver.hpp"
+#include "sud/sol/mustSolver.hpp"
 #include <array>
 
 namespace sud::sol
@@ -11,8 +11,8 @@ namespace sud::sol
     class Solver
     {
     private:
-        Simple simple;
-        Must must;
+        SimpleSolver simple;
+        MustSolver must;
 
     public:
         Solver(Sudoku &sudoku);

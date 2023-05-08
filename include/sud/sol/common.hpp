@@ -18,8 +18,12 @@ namespace sud::sol
     public:
         Possible possible;
         Sudoku &sudoku;
-      
+
         Common(Sudoku &sudoku);
+
+        void insert(const Point &point, const square_t value);
+
+        uint8_t missing_number(const Point &point);
 
         bool is_number_possible(const Point &point, const square_t value) const;
         std::vector<square_t> get_possible(const Point &point) const;

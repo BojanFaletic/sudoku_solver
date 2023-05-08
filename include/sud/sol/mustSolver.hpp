@@ -6,7 +6,7 @@
 
 namespace sud::sol
 {
-    class Must : public Common
+    class MustSolver : public Common
     {
     private:        
         // used for detecting unique numbers
@@ -16,7 +16,7 @@ namespace sud::sol
         void remove_possible_candidate_inside_box_col(const Point &point, const square_t value);
 
     public:
-        Must(Sudoku &sudoku);
+        MustSolver(Sudoku &sudoku);
 
         // if number is unique in a row/col/box, then it is the only possible number for that square
         void filter_unique();
