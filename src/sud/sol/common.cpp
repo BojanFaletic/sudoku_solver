@@ -7,20 +7,21 @@ namespace sud::sol
     {
     }
 
-    std::vector<square_t> Common::get_possible(const Point &point) const
+    std::vector<Square> Common::get_possible(const Point &point) const
     {
-        std::vector<square_t> possible;
-        for (square_t i = 1; i <= 9; i++)
+        std::vector<Square> possible;
+        for (std::uint8_t i = 1; i <= SUDOKU_SIZE; i++)
         {
-            if (sudoku.is_possible(point, i))
+            const Square value{i};
+            if (is_number_possible(point, value))
             {
-                possible.push_back(i);
+                possible.push_back(value);
             }
         }
         return possible;
     }
 
-    bool Common::is_number_possible_row(const Point &point, const square_t value) const
+    bool Common::is_number_possible_row(const Point &point, const Square value) const
     {
         for (uint8_t col = 0; col < SUDOKU_SIZE; col++)
         {
@@ -32,7 +33,7 @@ namespace sud::sol
         return true;
     }
 
-    bool Common::is_number_possible_col(const Point &point, const square_t value) const
+    bool Common::is_number_possible_col(const Point &point, const Square value) const
     {
         for (uint8_t row = 0; row < SUDOKU_SIZE; row++)
         {
@@ -44,7 +45,7 @@ namespace sud::sol
         return true;
     }
 
-    bool Common::is_number_possible_box(const Point &point, const square_t value) const
+    bool Common::is_number_possible_box(const Point &point, const Square value) const
     {
         const Point block = point / SUDOKU_BOX_SIZE * SUDOKU_BOX_SIZE;
         for (uint8_t i = 0; i < SUDOKU_BOX_SIZE; i++)
@@ -61,7 +62,7 @@ namespace sud::sol
         return true;
     }
 
-    bool Common::is_number_possible(const Point &point, const square_t value) const
+    bool Common::is_number_possible(const Point &point, const Square value) const
     {
         bool possible = true;
         possible &= is_number_possible_row(point, value);
@@ -88,11 +89,11 @@ namespace sud::sol
     Common::possible_array_t Common::row_wise_possible()
     {
         possible_array_t poss;
-        for (square_t row = 0; row < SUDOKU_SIZE; row++)
+        for (std::uint8_t row = 0; row < SUDOKU_SIZE; row++)
         {
-            for (square_t col = 0; col < SUDOKU_SIZE; col++)
+            for (std::uint8_t col = 0; col < SUDOKU_SIZE; col++)
             {
-                poss[row].set(sudoku[{row, col}]);
+                poss[row].set(sudoku[{row, col}].to_value());
             }
             poss[row].flip();
         }
@@ -102,11 +103,11 @@ namespace sud::sol
     Common::possible_array_t Common::col_wise_possible()
     {
         possible_array_t poss;
-        for (square_t col = 0; col < SUDOKU_SIZE; col++)
+        for (std::uint8_t col = 0; col < SUDOKU_SIZE; col++)
         {
-            for (square_t row = 0; row < SUDOKU_SIZE; row++)
+            for (std::uint8_t row = 0; row < SUDOKU_SIZE; row++)
             {
-                poss[col].set(sudoku[Point(row, col)]);
+                poss[col].set(sudoku[{row, col}].to_value());
             }
             poss[col].flip();
         }
@@ -125,7 +126,7 @@ namespace sud::sol
             {
                 for (uint8_t j = 0; j < SUDOKU_BOX_SIZE; j++)
                 {
-                    poss[block_idx].set(sudoku[Point(row + i, col + j)]);
+                    poss[block_idx].set(sudoku[Point(row + i, col + j)].to_value());
                 }
             }
             poss[block_idx].flip();
@@ -145,7 +146,7 @@ namespace sud::sol
             const uint8_t box_idx = (point.row / SUDOKU_BOX_SIZE) * SUDOKU_BOX_SIZE + point.col / SUDOKU_BOX_SIZE;
             possible[point] = row_wise[point.row] & col_wise[point.col] & box_wise[box_idx];
 
-            if (sudoku[point] != 0)
+            if (sudoku[point])
             {
                 possible[point].reset();
             }
@@ -157,7 +158,7 @@ namespace sud::sol
         bool res = false;
         for (const Point &point : PointIterator())
         {
-            if (sudoku[point] == 0)
+            if (!sudoku[point])
             {
                 const uint8_t val = missing_number(point);
                 if (val != 0)

@@ -12,11 +12,11 @@ namespace sud::sol
     bool SimpleSolver::unique_filter_row()
     {
         bool res = false;
-        for (square_t row = 0; row < SUDOKU_SIZE; row++)
+        for (std::uint8_t row = 0; row < SUDOKU_SIZE; row++)
         {
             std::array<count_t, SUDOKU_POSSIBLE_NUMBERS> count{};
 
-            for (square_t col = 0; col < SUDOKU_SIZE; col++)
+            for (std::uint8_t col = 0; col < SUDOKU_SIZE; col++)
             {
                 update_freq({row, col}, count);
             }
@@ -35,11 +35,11 @@ namespace sud::sol
     bool SimpleSolver::unique_filter_col()
     {
         bool res = false;
-        for (square_t col = 0; col < SUDOKU_SIZE; col++)
+        for (std::uint8_t col = 0; col < SUDOKU_SIZE; col++)
         {
             std::array<count_t, SUDOKU_POSSIBLE_NUMBERS> count{};
 
-            for (square_t row = 0; row < SUDOKU_SIZE; row++)
+            for (std::uint8_t row = 0; row < SUDOKU_SIZE; row++)
             {
                 update_freq({row, col}, count);
             }

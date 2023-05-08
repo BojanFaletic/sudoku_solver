@@ -5,20 +5,34 @@
 
 namespace sud
 {
-    struct square_hidden_t
+    class square_hidden_t
     {
-        square_t &value;
+    private:
+        Square &value;
         const Point &point;
 
-        square_t insert(const Point &point, const square_t value);
+    public:
+        square_hidden_t(Square &value, const Point &point) : value(value), point(point) {}
 
-        square_t operator=(const square_t value)
+        Square insert(const Point &point, const Square value);
+
+        Square operator=(const Square value)
         {
             insert(point, value);
             return value;
         }
 
-        operator square_t() const
+        std::uint8_t to_value() const
+        {
+            return value.to_value();
+        }
+
+        operator Square() const
+        {
+            return value;
+        }
+
+        operator bool() const
         {
             return value;
         }
@@ -33,9 +47,9 @@ namespace sud
         status_e read_from_CSV(const std::string &filename);
         uint8_t count_missing() const;
 
-        bool is_possible_row(const Point &point, const square_t value) const;
-        bool is_possible_col(const Point &point, const square_t value) const;
-        bool is_possible_box(const Point &point, const square_t value) const;
+        bool is_possible_row(const Point &point, const Square value) const;
+        bool is_possible_col(const Point &point, const Square value) const;
+        bool is_possible_box(const Point &point, const Square value) const;
 
     public:
         Sudoku();
@@ -49,22 +63,19 @@ namespace sud
         status_e check() const;
 
         // Getters and setters
-        square_t get(const square_t row, const square_t col) const;
-        square_t get(const Point &point) const;
-
-        void set(const square_t row, const square_t col, const square_t value);
-        void set(const Point &point, const square_t value);
+        Square get(const Point &point) const;
+        Square set(const Point &point, const Square value);
 
         bool is_solved() const;
         bool is_valid() const;
-        bool is_possible(const Point &point, const square_t value) const;
+        bool is_possible(const Point &point, const Square value) const;
 
         // Print the sudoku board
         friend std::ostream &operator<<(std::ostream &os, const Sudoku &sudoku);
 
         // for reading and writing to the sudoku
         square_hidden_t operator[](const Point &point);
-        square_t operator[](const Point &point) const;
+        Square operator[](const Point &point) const;
     };
 
 }; // namespace sud

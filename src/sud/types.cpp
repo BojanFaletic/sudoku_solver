@@ -5,12 +5,12 @@
 namespace sud
 {
     // Point
-    Point Point::operator*(const square_t &value) const
+    Point Point::operator*(const std::uint8_t &value) const
     {
         return Point(row * value, col * value);
     }
 
-    Point Point::operator/(const square_t &value) const
+    Point Point::operator/(const std::uint8_t &value) const
     {
         return Point(row / value, col / value);
     }

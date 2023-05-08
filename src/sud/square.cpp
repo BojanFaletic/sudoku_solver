@@ -2,7 +2,10 @@
 #include "sud/types.hpp"
 #include <stdexcept>
 
-namespace sud{
+namespace sud
+{
+    Square::Square() : value(0) {}
+
     Square::Square(const std::uint8_t value) : value(value)
     {
         if (value > SUDOKU_SIZE)
@@ -11,9 +14,20 @@ namespace sud{
         }
     }
 
-    std::uint8_t Square::get_value() const
+    Square Square::get() const
+    {
+        return *this;
+    }
+
+    std::uint8_t Square::to_value() const
     {
         return value;
+    }
+
+    Square Square::set(const Square &other)
+    {
+        value = other.value;
+        return *this;
     }
 
     bool Square::operator==(const Square &other) const
@@ -24,6 +38,11 @@ namespace sud{
     bool Square::operator!=(const Square &other) const
     {
         return value != other.value;
+    }
+
+    Square::operator bool() const
+    {
+        return value != 0;
     }
 
     std::ostream &operator<<(std::ostream &os, const Square &square)

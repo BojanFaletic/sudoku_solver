@@ -12,7 +12,7 @@ namespace sud::sol
         return false;
     }
 
-    bool MustSolver::is_number_possible_outside_box_row(const Point &point, const square_t value) const
+    bool MustSolver::is_number_possible_outside_box_row(const Point &point, const Square value) const
     {
         const Point block = point / SUDOKU_BOX_SIZE * SUDOKU_BOX_SIZE;
         for (uint8_t row = 0; row < SUDOKU_SIZE; row++)
@@ -29,7 +29,7 @@ namespace sud::sol
         return false;
     }
 
-    bool MustSolver::is_number_possible_outside_box_col(const Point &point, const square_t value) const
+    bool MustSolver::is_number_possible_outside_box_col(const Point &point, const Square value) const
     {
         const Point block = point / SUDOKU_BOX_SIZE * SUDOKU_BOX_SIZE;
         for (uint8_t col = 0; col < SUDOKU_SIZE; col++)
@@ -46,7 +46,7 @@ namespace sud::sol
         return false;
     }
 
-    void MustSolver::remove_possible_candidate_inside_box_row(const Point &point, const square_t value)
+    void MustSolver::remove_possible_candidate_inside_box_row(const Point &point, const Square value)
     {
         const Point block = point / SUDOKU_BOX_SIZE * SUDOKU_BOX_SIZE;
 
@@ -59,17 +59,17 @@ namespace sud::sol
                 {
                     continue;
                 }
-                if (possible[{row, col}][value])
+                if (possible[{row, col}][value.to_value()])
                 {
                     std::cout << fmt::format("remove_possible_candidate_inside_box_row: point: {}, value: {}\n", Point(row, col), value);
                 }
 
-                possible[{row, col}][value] = false;
+                possible[{row, col}][value.to_value()] = false;
             }
         }
     }
 
-    void MustSolver::remove_possible_candidate_inside_box_col(const Point &point, const square_t value)
+    void MustSolver::remove_possible_candidate_inside_box_col(const Point &point, const Square value)
     {
         const Point block = point / SUDOKU_BOX_SIZE * SUDOKU_BOX_SIZE;
 

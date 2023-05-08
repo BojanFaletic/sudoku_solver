@@ -29,7 +29,7 @@ using namespace std;
 using namespace sud;
 using namespace sud::sol;
 
-std::array<std::array<uint8_t, 9>, 9> const puzzle_1 = {
+std::array<std::array<Square, 9>, 9> const puzzle_1 = {
         {{1, 9, 8, 5, 0, 3, 7, 0, 6},
          {6, 0, 3, 0, 0, 8, 0, 9, 0},
          {0, 0, 7, 6, 0, 9, 8, 0, 0},

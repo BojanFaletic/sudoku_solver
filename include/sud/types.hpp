@@ -1,11 +1,11 @@
 #pragma once
 
-#include <stdint.h>
-#include <optional>
+#include "sud/square.hpp"
+#include <cstdint>
 #include <array>
 #include <set>
 #include <cassert>
-#include <sstream>
+#include <optional>
 #include <fmt/format.h>
 
 #define assertm(exp, msg) assert(((void)msg, exp))
@@ -55,29 +55,20 @@ namespace sud
     /* -- typedefs -- */
     /* -----------------*/
 
-    // type of a square in the sudoku board
-    using square_t = uint8_t;
-
     // description of the sudoku board
-    using sudoku_t = std::array<std::array<uint8_t, SUDOKU_SIZE>, SUDOKU_SIZE>;
-
-    // boolean array of size 9 indicating which numbers are missing
-    using missing_t = std::set<square_t>;
-
-    // boolean array of size 9x9 indicating which numbers are missing
-    using missing_full_t = std::array<std::array<missing_t, SUDOKU_SIZE>, SUDOKU_SIZE>;
+    using sudoku_t = std::array<std::array<Square, SUDOKU_SIZE>, SUDOKU_SIZE>;
 
     struct Point
     {
-        square_t row;
-        square_t col;
+        std::uint8_t row;
+        std::uint8_t col;
 
         Point() : row(0), col(0) {}
-        Point(square_t row, square_t col) : row(row), col(col) {}
+        Point(std::uint8_t row, std::uint8_t col) : row(row), col(col) {}
 
         // operators
-        Point operator*(const square_t &value) const;
-        Point operator/(const square_t &value) const;
+        Point operator*(const std::uint8_t &value) const;
+        Point operator/(const std::uint8_t &value) const;
         Point operator+(const Point &other) const;
         bool operator==(const Point &other) const;
         friend std::ostream &operator<<(std::ostream &os, const Point &point);
@@ -109,7 +100,6 @@ namespace sud
         std::optional<float> difficulty;
     };
 
-    using solve_candidates_t = std::array<std::array<missing_t, SUDOKU_SIZE>, SUDOKU_SIZE>;
 }; // namespace sud
 
 template <>

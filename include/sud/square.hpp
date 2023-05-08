@@ -8,18 +8,22 @@ namespace sud
     class Square
     {
     private:
-        const std::uint8_t value;
+        std::uint8_t value;
 
     public:
+        Square();
         Square(const std::uint8_t value);
 
         // getters
-        std::uint8_t get_value() const;
+        Square get() const;
+        Square set(const Square &other);
+        std::uint8_t to_value() const;
 
         // operators
         bool operator==(const Square &other) const;
         bool operator!=(const Square &other) const;
         friend std::ostream &operator<<(std::ostream &os, const Square &square);
+        operator bool() const;
     };
 
 } // namespace sud
