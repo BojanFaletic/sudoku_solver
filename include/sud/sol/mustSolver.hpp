@@ -20,8 +20,7 @@ namespace sud::sol
 
         // if number is unique in a row/col/box, then it is the only possible number for that square
         void filter_unique();
-
-
+        
         bool solve();
     };
 
