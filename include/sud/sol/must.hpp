@@ -8,10 +8,7 @@ namespace sud::sol
 {
     class Must : public Algorithm
     {
-    private:
-        SolverSudoku &sudoku;
-        std::array<possible_t, SUDOKU_SIZE> &possible_board;
-
+    private:        
         // used for detecting unique numbers
         bool is_number_possible_outside_box_row(const Point &point, const square_t value) const;
         bool is_number_possible_outside_box_col(const Point &point, const square_t value) const;
@@ -19,7 +16,7 @@ namespace sud::sol
         void remove_possible_candidate_inside_box_col(const Point &point, const square_t value);
 
     public:
-        Must(SolverSudoku &sudoku);
+        Must(Sudoku &sudoku);
 
         // if number is unique in a row/col/box, then it is the only possible number for that square
         void filter_unique();

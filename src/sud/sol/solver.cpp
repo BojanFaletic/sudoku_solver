@@ -8,7 +8,7 @@
 
 namespace sud::sol
 {
-    Solver::Solver(SolverSudoku &sudoku) : simple(sudoku), must(sudoku)
+    Solver::Solver(Sudoku &sudoku) : simple(sudoku), must(sudoku)
     {
     }
 

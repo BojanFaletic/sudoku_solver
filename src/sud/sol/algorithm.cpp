@@ -2,7 +2,8 @@
 
 namespace sud::sol
 {
-    Algorithm::Algorithm(SolverSudoku &sudoku) : sudoku(sudoku) {}
+    Algorithm::Algorithm(Sudoku &sudoku) : sudoku(sudoku), possible(sudoku)
+    {}
 
     std::vector<square_t> Algorithm::get_possible(const Point &point) const
     {

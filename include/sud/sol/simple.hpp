@@ -1,7 +1,7 @@
 #pragma once
 
 #include "sud/types.hpp"
-#include "sud/sol/solverSudoku.hpp"
+#include "sud/sol/possible.hpp"
 #include "sud/sol/algorithm.hpp"
 #include <bitset>
 #include <vector>
@@ -13,13 +13,12 @@ namespace sud::sol
         friend class SimpleTest;
 
     private:
-        SolverSudoku &sudoku;
-        std::array<possible_t, SUDOKU_SIZE> &possible_board;
-
         // search strategy for each of the square
-        possible_t row_wise_possible();
-        possible_t col_wise_possible();
-        possible_t box_wise_possible();
+        using possible_array_t = std::array<possible_t, SUDOKU_SIZE>;
+        
+        possible_array_t row_wise_possible();
+        possible_array_t col_wise_possible();
+        possible_array_t box_wise_possible();
 
         struct count_t
         {
@@ -40,7 +39,7 @@ namespace sud::sol
 
         
     public:
-        Simple(SolverSudoku &sudoku);
+        Simple(Sudoku &sudoku);
 
         uint8_t missing_number(const Point &point);
 

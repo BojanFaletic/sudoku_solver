@@ -3,7 +3,7 @@
 
 namespace sud::sol
 {
-    Must::Must(SolverSudoku &sudoku) : sudoku(sudoku), Algorithm(sudoku), possible_board(sudoku.possible_board)
+    Must::Must(Sudoku &sudoku) : Algorithm(sudoku)
     {
     }
 
@@ -59,12 +59,12 @@ namespace sud::sol
                 {
                     continue;
                 }
-                if (possible_board[row][col][value])
+                if (possible[{row, col}][value])
                 {
                     std::cout << fmt::format("remove_possible_candidate_inside_box_row: point: {}, value: {}\n", Point(row, col), value);
                 }
 
-                possible_board[row][col][value] = false;
+                possible[{row, col}][value] = false;
             }
         }
     }
@@ -82,7 +82,7 @@ namespace sud::sol
                 {
                     continue;
                 }
-                possible_board[row][col][value] = false;
+                possible[{row, col}][value] = false;
             }
         }
     }
@@ -108,7 +108,7 @@ namespace sud::sol
 
                 for (uint8_t number = 1; number < SUDOKU_POSSIBLE_NUMBERS; number++)
                 {
-                    if (possible_board[row][col][number])
+                    if (possible[{row, col}][number])
                     {
                         bool is_outside_row = is_number_possible_outside_box_row({row, col}, number);
                         bool is_outside_col = is_number_possible_outside_box_col({row, col}, number);

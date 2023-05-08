@@ -1,17 +1,17 @@
 #include "sud//sol/simple.hpp"
 #include <iostream>
+#include <cmath>
 
 namespace sud::sol
 {
 
-    Simple::Simple(SolverSudoku &sudoku) : sudoku(sudoku), Algorithm(sudoku), possible_board(sudoku.possible_board)
+    Simple::Simple(Sudoku &sudoku) : Algorithm(sudoku)
     {
-        find_possible();
     }
 
-    possible_t Simple::row_wise_possible()
+    Simple::possible_array_t Simple::row_wise_possible()
     {
-        possible_t poss;
+        possible_array_t poss;
         for (square_t row = 0; row < SUDOKU_SIZE; row++)
         {
             for (square_t col = 0; col < SUDOKU_SIZE; col++)
@@ -23,9 +23,9 @@ namespace sud::sol
         return poss;
     }
 
-    possible_t Simple::col_wise_possible()
+    Simple::possible_array_t Simple::col_wise_possible()
     {
-        possible_t poss;
+        possible_array_t poss;
         for (square_t col = 0; col < SUDOKU_SIZE; col++)
         {
             for (square_t row = 0; row < SUDOKU_SIZE; row++)
@@ -37,9 +37,9 @@ namespace sud::sol
         return poss;
     }
 
-    possible_t Simple::box_wise_possible()
+    Simple::possible_array_t Simple::box_wise_possible()
     {
-        possible_t poss;
+        possible_array_t poss;
         for (uint8_t block_idx = 0; block_idx < SUDOKU_SIZE; block_idx++)
         {
             const uint8_t row = block_idx / SUDOKU_BOX_SIZE * SUDOKU_BOX_SIZE;
@@ -59,11 +59,11 @@ namespace sud::sol
 
     uint8_t Simple::missing_number(const Point &point)
     {
-        if (possible_board[point.row][point.col].count() == 1)
+        if (possible[point].count() == 1)
         {
             for (uint8_t i = 1; i < SUDOKU_POSSIBLE_NUMBERS; i++)
             {
-                if (possible_board[point.row][point.col][i])
+                if (possible[point][i])
                 {
                     return i;
                 }
@@ -115,7 +115,7 @@ namespace sud::sol
             if (it != 0)
             {
                 insert(count[it].pos, it);
-                possible_board[count[it].pos.row][count[it].pos.col].reset();
+                possible[count[it].pos].reset();
                 res = true;
             }
         }
@@ -138,7 +138,7 @@ namespace sud::sol
             if (it != 0)
             {
                 insert(count[it].pos, it);
-                possible_board[count[it].pos.row][count[it].pos.col].reset();
+                possible[count[it].pos].reset();                
                 res = true;
             }
         }
@@ -161,7 +161,7 @@ namespace sud::sol
     {
         for (uint8_t i = 1; i < SUDOKU_POSSIBLE_NUMBERS; i++)
         {
-            if (possible_board[point.row][point.col][i])
+            if (possible[point][i])
             {
                 count[i].freq++;
                 count[i].pos = point;
@@ -195,7 +195,7 @@ namespace sud::sol
             if (sudoku[point] == 0)
             {
                 insert(point, it);
-                possible_board[point.row][point.col].reset();
+                possible[point].reset();
                 res = true;
             }
         }
@@ -220,9 +220,9 @@ namespace sud::sol
                 if (sudoku.get(row, col) == 0)
                 {
                     // if there is only one possible number, set it
-                    if (possible_board[row][col].count() == 1)
+                    if (possible[{row, col}].count() == 1)
                     {
-                        uint8_t num = std::log2(possible_board[row][col].to_ulong());
+                        uint8_t num = std::log2(possible[{row, col}].to_ulong());
                         sudoku.set(row, col, num);
                     }
                 }
@@ -232,19 +232,19 @@ namespace sud::sol
 
     void Simple::find_possible()
     {
-        const possible_t row_wise = row_wise_possible();
-        const possible_t col_wise = col_wise_possible();
-        const possible_t box_wise = box_wise_possible();
+        const possible_array_t row_wise = row_wise_possible();
+        const possible_array_t col_wise = col_wise_possible();
+        const possible_array_t box_wise = box_wise_possible();
 
         // for number to be valid, it must be present in all three sets
         for (const Point &point : PointIterator())
         {
             const uint8_t box_idx = (point.row / SUDOKU_BOX_SIZE) * SUDOKU_BOX_SIZE + point.col / SUDOKU_BOX_SIZE;
-            possible_board[point.row][point.col] = row_wise[point.row] & col_wise[point.col] & box_wise[box_idx];
+            possible[point] = row_wise[point.row] & col_wise[point.col] & box_wise[box_idx];
 
             if (sudoku[point] != 0)
             {
-                possible_board[point.row][point.col].reset();
+                possible[point].reset();
             }
         }
     }
