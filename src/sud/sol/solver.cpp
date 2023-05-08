@@ -1,5 +1,5 @@
-#include "solver.hpp"
-#include "types.hpp"
+#include "sud/sol/solver.hpp"
+#include "sud/types.hpp"
 #include <algorithm>
 #include <cmath>
 #include <cassert>
@@ -8,7 +8,7 @@
 
 namespace sud::sol
 {
-    Solver::Solver(Sudoku &sudoku) : sudoku(sudoku), simple(sudoku), must(sudoku)
+    Solver::Solver(SolverSudoku &sudoku) : simple(sudoku), must(sudoku)
     {
     }
 

@@ -1,9 +1,9 @@
 #pragma once
 
-#include "types.hpp"
-#include "sudoku.hpp"
-#include "simple.hpp"
-#include "must.hpp"
+#include "sud/types.hpp"
+#include "sud/sol/solverSudoku.hpp"
+#include "sud/sol/simple.hpp"
+#include "sud/sol/must.hpp"
 #include <array>
 
 namespace sud::sol
@@ -13,10 +13,9 @@ namespace sud::sol
     private:
         Simple simple;
         Must must;
-        Sudoku &sudoku;
 
     public:
-        Solver(Sudoku &sudoku);
+        Solver(SolverSudoku &sudoku);
 
         status_e solve();
     };

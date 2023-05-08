@@ -21,8 +21,7 @@ get_filename_component(TEST_FILE_ABS "data/sample.csv" ABSOLUTE BASE_DIR ${CMAKE
 add_definitions(-DTEST_FILE_ABS="${TEST_FILE_ABS}")
 
 # mark all .cpp files to be compiled
-include_directories(include/sud)
-include_directories(include/sud/sol)
+include_directories(include)
 aux_source_directory(src/sud/sol SOURCES)
 aux_source_directory(src/sud SOURCES)
 

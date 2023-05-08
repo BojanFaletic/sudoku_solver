@@ -3,10 +3,10 @@
 #include <boost/log/core.hpp>
 #include <boost/log/expressions.hpp>
 
-#include "sudoku.hpp"
-#include "loader.hpp"
-#include "solver.hpp"
-#include "simple.hpp"
+#include "sud/sudoku.hpp"
+#include "sud/loader.hpp"
+#include "sud/sol/solver.hpp"
+#include "sud/sol/simple.hpp"
 #include "fmt/format.h"
 
 
@@ -28,8 +28,8 @@ int main()
     {
         cout << fmt::format("Solving puzzle {} with difficulty {}", sudoku.id, sudoku.difficulty.value_or(-1)) << endl;
         Sudoku s{sudoku.puzzle};
-        Simple solver{s};
-        solver.solve();
+        //Simple solver{s};
+        //solver.solve();
         cout << s << endl;
     }
 
@@ -37,8 +37,8 @@ int main()
     cout << sudoku << endl;
 
     cout << "Solving..." << endl;
-    Simple solver{sudoku};
-    solver.solve();
+    //Simple solver{sudoku};
+    //solver.solve();
     cout << "Done" << endl;
     cout << "Final board:" << endl;
     cout << sudoku << endl;

@@ -7,7 +7,7 @@
 #include <sstream>
 #include <iostream>
 #include <fmt/core.h>
-#include "sudoku.hpp"
+#include "sud/sudoku.hpp"
 
 using namespace boost;
 using namespace std;
@@ -179,6 +179,52 @@ namespace sud
             return false;
         }
         return check() == SUCCESS;
+    }
+
+    bool Sudoku::is_possible_row(const Point &point, const square_t value) const
+    {
+        for (square_t col = 0; col < SUDOKU_SIZE; col++)
+        {
+            if (board[point.row][col] == value)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    bool Sudoku::is_possible_col(const Point &point, const square_t value) const
+    {
+        for (square_t row = 0; row < SUDOKU_SIZE; row++)
+        {
+            if (board[row][point.col] == value)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    bool Sudoku::is_possible_box(const Point &point, const square_t value) const
+    {
+        const square_t box_row = point.row / SUDOKU_BOX_SIZE;
+        const square_t box_col = point.col / SUDOKU_BOX_SIZE;
+        for (square_t row = box_row * SUDOKU_BOX_SIZE; row < box_row * SUDOKU_BOX_SIZE + SUDOKU_BOX_SIZE; row++)
+        {
+            for (square_t col = box_col * SUDOKU_BOX_SIZE; col < box_col * SUDOKU_BOX_SIZE + SUDOKU_BOX_SIZE; col++)
+            {
+                if (board[row][col] == value)
+                {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    bool Sudoku::is_possible(const Point &point, const square_t value) const
+    {
+        return is_possible_row(point, value) && is_possible_col(point, value) && is_possible_box(point, value);
     }
 
     status_e Sudoku::save_to_CSV(const string &filename)

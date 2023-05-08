@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-#include "types.hpp"
+#include "sud/types.hpp"
 
 namespace sud
 {
@@ -13,6 +13,10 @@ namespace sud
         void zero_out_board();
         status_e read_from_CSV(const std::string &filename);
         uint8_t count_missing() const;
+
+        bool is_possible_row(const Point &point, const square_t value) const;
+        bool is_possible_col(const Point &point, const square_t value) const;
+        bool is_possible_box(const Point &point, const square_t value) const;
 
     public:
         Sudoku();
@@ -34,6 +38,7 @@ namespace sud
 
         bool is_solved() const;
         bool is_valid() const;
+        bool is_possible(const Point &point, const square_t value) const;
 
         // Print the sudoku board
         square_t operator[](const Point &point) const;

@@ -8,8 +8,7 @@ find_package(fmt CONFIG REQUIRED)
 find_package(GTest CONFIG REQUIRED)
 
 # mark all .cpp files to be compiled
-include_directories(../include/sud)
-include_directories(../include/sud/sod)
+include_directories(../include)
 aux_source_directory(../src/sud SOURCES2)
 aux_source_directory(../src/sud/sol SOURCES2)
 

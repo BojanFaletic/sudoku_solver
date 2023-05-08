@@ -1,15 +1,15 @@
-#include "simple.hpp"
+#include "sud//sol/simple.hpp"
 #include <iostream>
 
 namespace sud::sol
 {
 
-    Simple::Simple(Sudoku &sudoku) : sudoku(sudoku)
+    Simple::Simple(SolverSudoku &sudoku) : sudoku(sudoku), Algorithm(sudoku), possible_board(sudoku.possible_board)
     {
         find_possible();
     }
 
-    Simple::possible_t Simple::row_wise_possible()
+    possible_t Simple::row_wise_possible()
     {
         possible_t poss;
         for (square_t row = 0; row < SUDOKU_SIZE; row++)
@@ -23,7 +23,7 @@ namespace sud::sol
         return poss;
     }
 
-    Simple::possible_t Simple::col_wise_possible()
+    possible_t Simple::col_wise_possible()
     {
         possible_t poss;
         for (square_t col = 0; col < SUDOKU_SIZE; col++)
@@ -37,7 +37,7 @@ namespace sud::sol
         return poss;
     }
 
-    Simple::possible_t Simple::box_wise_possible()
+    possible_t Simple::box_wise_possible()
     {
         possible_t poss;
         for (uint8_t block_idx = 0; block_idx < SUDOKU_SIZE; block_idx++)
@@ -211,176 +211,6 @@ namespace sud::sol
         return res;
     }
 
-    bool Simple::is_number_possible_row(const Point &point, const square_t value) const
-    {
-        for (uint8_t col = 0; col < SUDOKU_SIZE; col++)
-        {
-            if (sudoku[{point.row, col}] == value)
-            {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    bool Simple::is_number_possible_col(const Point &point, const square_t value) const
-    {
-        for (uint8_t row = 0; row < SUDOKU_SIZE; row++)
-        {
-            if (sudoku[{row, point.col}] == value)
-            {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    bool Simple::is_number_possible_box(const Point &point, const square_t value) const
-    {
-        const Point block = point / SUDOKU_BOX_SIZE * SUDOKU_BOX_SIZE;
-        for (uint8_t i = 0; i < SUDOKU_BOX_SIZE; i++)
-        {
-            for (uint8_t j = 0; j < SUDOKU_BOX_SIZE; j++)
-            {
-                const Point p = block + Point(i, j);
-                if (sudoku[p] == value)
-                {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
-    bool Simple::is_number_possible(const Point &point, const square_t value) const
-    {
-        bool possible = true;
-        possible &= is_number_possible_row(point, value);
-        possible &= is_number_possible_col(point, value);
-        possible &= is_number_possible_box(point, value);
-        return possible;
-    }
-
-    bool Simple::is_number_possible_outside_box_row(const Point &point, const square_t value) const
-    {
-        const Point block = point / SUDOKU_BOX_SIZE * SUDOKU_BOX_SIZE;
-        for (uint8_t row = 0; row < SUDOKU_SIZE; row++)
-        {
-            if (row >= block.row && row < block.row + SUDOKU_BOX_SIZE)
-            {
-                continue;
-            }
-            if (is_number_possible({row, point.col}, value))
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    bool Simple::is_number_possible_outside_box_col(const Point &point, const square_t value) const
-    {
-        const Point block = point / SUDOKU_BOX_SIZE * SUDOKU_BOX_SIZE;
-        for (uint8_t col = 0; col < SUDOKU_SIZE; col++)
-        {
-            if (col >= block.col && col < block.col + SUDOKU_BOX_SIZE)
-            {
-                continue;
-            }
-            if (is_number_possible({point.row, col}, value))
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    void Simple::remove_possible_candidate_inside_box_row(const Point &point, const square_t value)
-    {
-        const Point block = point / SUDOKU_BOX_SIZE * SUDOKU_BOX_SIZE;
-
-        std::cout << fmt::format("remove_possible_candidate_inside_box_row: point: {}, value: {}\n", block, value);
-        for (uint8_t row = block.row; row < block.row + SUDOKU_BOX_SIZE; row++)
-        {
-            for (uint8_t col = block.col; col < block.col + SUDOKU_BOX_SIZE; col++)
-            {
-                if (row == point.row)
-                {
-                    continue;
-                }
-                if (possible_board[row][col][value])
-                {
-                    std::cout << fmt::format("remove_possible_candidate_inside_box_row: point: {}, value: {}\n", Point(row, col), value);
-                }
-
-                possible_board[row][col][value] = false;
-            }
-        }
-    }
-
-    void Simple::remove_possible_candidate_inside_box_col(const Point &point, const square_t value)
-    {
-        const Point block = point / SUDOKU_BOX_SIZE * SUDOKU_BOX_SIZE;
-
-        std::cout << fmt::format("remove_possible_candidate_inside_box_col: point: {}, value: {}\n", block, value);
-        for (uint8_t row = block.row; row < block.row + SUDOKU_BOX_SIZE; row++)
-        {
-            for (uint8_t col = block.col; col < block.col + SUDOKU_BOX_SIZE; col++)
-            {
-                if (col == point.col)
-                {
-                    continue;
-                }
-                possible_board[row][col][value] = false;
-            }
-        }
-    }
-
-    void Simple::filter_unique()
-    {
-        // check if the number must be in a row
-        for (uint8_t row = 0; row < SUDOKU_SIZE; row++)
-        {
-            for (uint8_t col = 0; col < SUDOKU_SIZE; col++)
-            {
-
-                if (sudoku[{row, col}] != 0)
-                {
-                    continue;
-                }
-
-                // break at (3,5)
-                if (row == 3 && col == 5)
-                {
-                    std::cout << "break\n";
-                }
-
-                for (uint8_t number = 1; number < SUDOKU_POSSIBLE_NUMBERS; number++)
-                {
-                    if (possible_board[row][col][number])
-                    {
-                        bool is_outside_row = is_number_possible_outside_box_row({row, col}, number);
-                        bool is_outside_col = is_number_possible_outside_box_col({row, col}, number);
-
-                        if (!is_outside_row)
-                        {
-                            // number must be in the row
-                            // remove it from the other boxes in the row
-                            remove_possible_candidate_inside_box_row({row, col}, number);
-                        }
-
-                        if (!is_outside_col)
-                        {
-                            // number must be in the col
-                            // remove it from the other boxes in the col
-                            remove_possible_candidate_inside_box_col({row, col}, number);
-                        }
-                    }
-                }
-            }
-        }
-    }
-
     void Simple::update_possible()
     {
         for (square_t row = 0; row < SUDOKU_SIZE; row++)
@@ -419,18 +249,7 @@ namespace sud::sol
         }
     }
 
-    std::vector<square_t> Simple::get_possible(const Point &point) const
-    {
-        std::vector<square_t> possible;
-        for (uint8_t number = 1; number < SUDOKU_POSSIBLE_NUMBERS; number++)
-        {
-            if (possible_board[point.row][point.col][number])
-            {
-                possible.push_back(number);
-            }
-        }
-        return possible;
-    }
+
 
     status_e Simple::solve()
     {

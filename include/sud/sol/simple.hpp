@@ -1,21 +1,20 @@
 #pragma once
 
-#include "types.hpp"
-#include "sudoku.hpp"
+#include "sud/types.hpp"
+#include "sud/sol/solverSudoku.hpp"
+#include "sud/sol/algorithm.hpp"
 #include <bitset>
 #include <vector>
 
 namespace sud::sol
 {
-    class Simple
+    class Simple : public Algorithm
     {
         friend class SimpleTest;
 
     private:
-        Sudoku &sudoku;
-
-        using possible_t = std::array<std::bitset<SUDOKU_POSSIBLE_NUMBERS>, SUDOKU_SIZE>;
-        std::array<possible_t, SUDOKU_SIZE> possible_board;
+        SolverSudoku &sudoku;
+        std::array<possible_t, SUDOKU_SIZE> &possible_board;
 
         // search strategy for each of the square
         possible_t row_wise_possible();
@@ -38,33 +37,20 @@ namespace sud::sol
         static uint8_t freq_to_value(const std::array<count_t, SUDOKU_POSSIBLE_NUMBERS> &count);
         void update_freq(const Point &point, std::array<count_t, SUDOKU_POSSIBLE_NUMBERS> &count) const;
 
-        bool is_number_possible(const Point &point, const square_t value) const;
-        bool is_number_possible_row(const Point &point, const square_t value) const;
-        bool is_number_possible_col(const Point &point, const square_t value) const;
-        bool is_number_possible_box(const Point &point, const square_t value) const;
 
-        // used for detecting unique numbers
-        bool is_number_possible_outside_box_row(const Point &point, const square_t value) const;
-        bool is_number_possible_outside_box_col(const Point &point, const square_t value) const;
-        void remove_possible_candidate_inside_box_row(const Point &point, const square_t value);
-        void remove_possible_candidate_inside_box_col(const Point &point, const square_t value);
-
+        
     public:
-        Simple(Sudoku &sudoku);
+        Simple(SolverSudoku &sudoku);
 
         uint8_t missing_number(const Point &point);
 
         bool basic_solve();
-
-        // if number is unique in a row/col/box, then it is the only possible number for that square
-        void filter_unique();
 
         void find_possible();
         bool unique_filter();
 
         void update_possible();
 
-        std::vector<square_t> get_possible(const Point &point) const;
 
         status_e solve();
     };
