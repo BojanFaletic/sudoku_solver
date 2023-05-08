@@ -2,13 +2,13 @@
 
 #include "sud/types.hpp"
 #include "sud/sol/possible.hpp"
-#include "sud/sol/algorithm.hpp"
+#include "sud/sol/common.hpp"
 #include <bitset>
 #include <vector>
 
 namespace sud::sol
 {
-    class Simple : public Algorithm
+    class Simple : public Common
     {
         friend class SimpleTest;
 

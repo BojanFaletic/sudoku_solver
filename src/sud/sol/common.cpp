@@ -1,11 +1,11 @@
-#include "sud/sol/algorithm.hpp"
+#include "sud/sol/common.hpp"
 
 namespace sud::sol
 {
-    Algorithm::Algorithm(Sudoku &sudoku) : sudoku(sudoku), possible(sudoku)
+    Common::Common(Sudoku &sudoku) : sudoku(sudoku), possible(sudoku)
     {}
 
-    std::vector<square_t> Algorithm::get_possible(const Point &point) const
+    std::vector<square_t> Common::get_possible(const Point &point) const
     {
         std::vector<square_t> possible;
         for (square_t i = 1; i <= 9; i++)
@@ -18,7 +18,7 @@ namespace sud::sol
         return possible;
     }
 
-    bool Algorithm::is_number_possible_row(const Point &point, const square_t value) const
+    bool Common::is_number_possible_row(const Point &point, const square_t value) const
     {
         for (uint8_t col = 0; col < SUDOKU_SIZE; col++)
         {
@@ -30,7 +30,7 @@ namespace sud::sol
         return true;
     }
 
-    bool Algorithm::is_number_possible_col(const Point &point, const square_t value) const
+    bool Common::is_number_possible_col(const Point &point, const square_t value) const
     {
         for (uint8_t row = 0; row < SUDOKU_SIZE; row++)
         {
@@ -42,7 +42,7 @@ namespace sud::sol
         return true;
     }
 
-    bool Algorithm::is_number_possible_box(const Point &point, const square_t value) const
+    bool Common::is_number_possible_box(const Point &point, const square_t value) const
     {
         const Point block = point / SUDOKU_BOX_SIZE * SUDOKU_BOX_SIZE;
         for (uint8_t i = 0; i < SUDOKU_BOX_SIZE; i++)
@@ -59,7 +59,7 @@ namespace sud::sol
         return true;
     }
 
-    bool Algorithm::is_number_possible(const Point &point, const square_t value) const
+    bool Common::is_number_possible(const Point &point, const square_t value) const
     {
         bool possible = true;
         possible &= is_number_possible_row(point, value);

@@ -2,11 +2,11 @@
 
 #include "sud/types.hpp"
 #include "sud/sudoku.hpp"
-#include "sud/sol/Algorithm.hpp"
+#include "sud/sol/common.hpp"
 
 namespace sud::sol
 {
-    class Must : public Algorithm
+    class Must : public Common
     {
     private:        
         // used for detecting unique numbers

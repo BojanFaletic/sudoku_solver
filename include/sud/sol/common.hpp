@@ -7,7 +7,7 @@
 
 namespace sud::sol
 {
-    class Algorithm
+    class Common
     {
     private:
         // possible numbers for each square
@@ -19,7 +19,7 @@ namespace sud::sol
         Possible possible;
         Sudoku &sudoku;
       
-        Algorithm(Sudoku &sudoku);
+        Common(Sudoku &sudoku);
 
         bool is_number_possible(const Point &point, const square_t value) const;
         std::vector<square_t> get_possible(const Point &point) const;

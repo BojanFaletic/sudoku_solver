@@ -5,7 +5,7 @@
 namespace sud::sol
 {
 
-    Simple::Simple(Sudoku &sudoku) : Algorithm(sudoku)
+    Simple::Simple(Sudoku &sudoku) : Common(sudoku)
     {
     }
 

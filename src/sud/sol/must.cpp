@@ -3,7 +3,7 @@
 
 namespace sud::sol
 {
-    Must::Must(Sudoku &sudoku) : Algorithm(sudoku)
+    Must::Must(Sudoku &sudoku) : Common(sudoku)
     {
     }
 
