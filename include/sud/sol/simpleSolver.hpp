@@ -13,13 +13,6 @@ namespace sud::sol
         friend class SimpleSolverTest;
 
     private:
-        // search strategy for each of the square
-        using possible_array_t = std::array<possible_t, SUDOKU_SIZE>;
-
-        possible_array_t row_wise_possible();
-        possible_array_t col_wise_possible();
-        possible_array_t box_wise_possible();
-
         struct count_t
         {
             uint8_t freq;
@@ -31,6 +24,7 @@ namespace sud::sol
         bool unique_filter_col();
         bool unique_filter_box();
 
+        
         static uint8_t freq_to_value(const std::array<count_t, SUDOKU_POSSIBLE_NUMBERS> &count);
         void update_freq(const Point &point, std::array<count_t, SUDOKU_POSSIBLE_NUMBERS> &count) const;
 
@@ -39,7 +33,6 @@ namespace sud::sol
 
         bool basic_solve();
 
-        void find_possible();
         bool unique_filter();
 
         void update_possible();

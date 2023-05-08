@@ -93,5 +93,72 @@ namespace sud::sol
         // todo update possible_board
     }
 
+    Common::possible_array_t Common::row_wise_possible()
+    {
+        possible_array_t poss;
+        for (square_t row = 0; row < SUDOKU_SIZE; row++)
+        {
+            for (square_t col = 0; col < SUDOKU_SIZE; col++)
+            {
+                poss[row].set(sudoku[Point(row, col)]);
+            }
+            poss[row].flip();
+        }
+        return poss;
+    }
+
+    Common::possible_array_t Common::col_wise_possible()
+    {
+        possible_array_t poss;
+        for (square_t col = 0; col < SUDOKU_SIZE; col++)
+        {
+            for (square_t row = 0; row < SUDOKU_SIZE; row++)
+            {
+                poss[col].set(sudoku[Point(row, col)]);
+            }
+            poss[col].flip();
+        }
+        return poss;
+    }
+
+    Common::possible_array_t Common::box_wise_possible()
+    {
+        possible_array_t poss;
+        for (uint8_t block_idx = 0; block_idx < SUDOKU_SIZE; block_idx++)
+        {
+            const uint8_t row = block_idx / SUDOKU_BOX_SIZE * SUDOKU_BOX_SIZE;
+            const uint8_t col = block_idx % SUDOKU_BOX_SIZE * SUDOKU_BOX_SIZE;
+
+            for (uint8_t i = 0; i < SUDOKU_BOX_SIZE; i++)
+            {
+                for (uint8_t j = 0; j < SUDOKU_BOX_SIZE; j++)
+                {
+                    poss[block_idx].set(sudoku[Point(row + i, col + j)]);
+                }
+            }
+            poss[block_idx].flip();
+        }
+        return poss;
+    }
+
+
+    void Common::find_possible()
+    {
+        const possible_array_t row_wise = row_wise_possible();
+        const possible_array_t col_wise = col_wise_possible();
+        const possible_array_t box_wise = box_wise_possible();
+
+        // for number to be valid, it must be present in all three sets
+        for (const Point &point : PointIterator())
+        {
+            const uint8_t box_idx = (point.row / SUDOKU_BOX_SIZE) * SUDOKU_BOX_SIZE + point.col / SUDOKU_BOX_SIZE;
+            possible[point] = row_wise[point.row] & col_wise[point.col] & box_wise[box_idx];
+
+            if (sudoku[point] != 0)
+            {
+                possible[point].reset();
+            }
+        }
+    }
 
 }
