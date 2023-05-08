@@ -5,6 +5,25 @@
 
 namespace sud
 {
+    struct square_hidden_t
+    {
+        square_t &value;
+        const Point &point;
+
+        square_t insert(const Point &point, const square_t value);
+
+        square_t operator=(const square_t value)
+        {
+            insert(point, value);
+            return value;
+        }
+
+        operator square_t() const
+        {
+            return value;
+        }
+    };
+
     class Sudoku
     {
     private:
@@ -41,10 +60,11 @@ namespace sud
         bool is_possible(const Point &point, const square_t value) const;
 
         // Print the sudoku board
-        square_t operator[](const Point &point) const;
-        square_t &operator[](const Point &point);
-
         friend std::ostream &operator<<(std::ostream &os, const Sudoku &sudoku);
+
+        // for reading and writing to the sudoku
+        square_hidden_t operator[](const Point &point);
+        square_t operator[](const Point &point) const;
     };
 
 }; // namespace sud

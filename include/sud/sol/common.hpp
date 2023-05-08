@@ -7,6 +7,7 @@
 
 namespace sud::sol
 {
+
     class Common
     {
     private:
@@ -21,7 +22,7 @@ namespace sud::sol
         possible_array_t row_wise_possible();
         possible_array_t col_wise_possible();
         possible_array_t box_wise_possible();
-        
+
     public:
         Possible possible;
         Sudoku &sudoku;
@@ -29,10 +30,11 @@ namespace sud::sol
         Common(Sudoku &sudoku);
 
         void find_possible();
-        void insert(const Point &point, const square_t value);
+        bool basic_solve();
 
         uint8_t missing_number(const Point &point);
         bool is_number_possible(const Point &point, const square_t value) const;
         std::vector<square_t> get_possible(const Point &point) const;
     };
+
 }

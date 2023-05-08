@@ -274,14 +274,23 @@ namespace sud
         board[point.row][point.col] = value;
     }
 
-    square_t Sudoku::operator[](const Point &point) const
-    {
+    square_t Sudoku::operator[](const Point &point) const{
         return board[point.row][point.col];
     }
 
-    square_t &Sudoku::operator[](const Point &point)
+
+    square_hidden_t Sudoku::operator[](const Point &point){
+        return {board[point.row][point.col], point};
+    }
+
+
+    square_t square_hidden_t::insert(const Point &point, const square_t value)
     {
-        return board[point.row][point.col];
+        std::cout << fmt::format("Inserting {} at ({}, {})\n", value, point.row, point.col);
+        assertm(this->value == 0, "Trying to insert a value in a non-empty square");
+        this->value = value;
+        return value;
+        // todo update possible_board
     }
 
     ostream &operator<<(ostream &os, const Sudoku &sudoku)

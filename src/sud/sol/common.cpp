@@ -85,14 +85,6 @@ namespace sud::sol
         return 0;
     }
 
-    void Common::insert(const Point &point, const square_t value)
-    {
-        std::cout << fmt::format("Inserting {} at ({}, {})\n", value, point.row, point.col);
-        assertm(sudoku[point] == 0, "Trying to insert a value in a non-empty square");
-        sudoku[point] = value;
-        // todo update possible_board
-    }
-
     Common::possible_array_t Common::row_wise_possible()
     {
         possible_array_t poss;
@@ -100,7 +92,7 @@ namespace sud::sol
         {
             for (square_t col = 0; col < SUDOKU_SIZE; col++)
             {
-                poss[row].set(sudoku[Point(row, col)]);
+                poss[row].set(sudoku[{row, col}]);
             }
             poss[row].flip();
         }
@@ -141,7 +133,6 @@ namespace sud::sol
         return poss;
     }
 
-
     void Common::find_possible()
     {
         const possible_array_t row_wise = row_wise_possible();
@@ -161,4 +152,21 @@ namespace sud::sol
         }
     }
 
+    bool Common::basic_solve()
+    {
+        bool res = false;
+        for (const Point &point : PointIterator())
+        {
+            if (sudoku[point] == 0)
+            {
+                const uint8_t val = missing_number(point);
+                if (val != 0)
+                {
+                    sudoku[point] = val;
+                    res = true;
+                }
+            }
+        }
+        return res;
+    }
 }

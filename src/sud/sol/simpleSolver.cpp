@@ -9,25 +9,6 @@ namespace sud::sol
     {
     }
 
-    bool SimpleSolver::basic_solve()
-    {
-        bool res = false;
-
-        for (const Point &point : PointIterator())
-        {
-            if (sudoku[point] == 0)
-            {
-                const uint8_t val = missing_number(point);
-                if (val != 0)
-                {
-                    insert(point, val);
-                    res = true;
-                }
-            }
-        }
-        return res;
-    }
-
     bool SimpleSolver::unique_filter_row()
     {
         bool res = false;
@@ -43,7 +24,7 @@ namespace sud::sol
             const uint8_t it = freq_to_value(count);
             if (it != 0)
             {
-                insert(count[it].pos, it);
+                sudoku[count[it].pos] = it;
                 possible[count[it].pos].reset();
                 res = true;
             }
@@ -66,7 +47,7 @@ namespace sud::sol
             const uint8_t it = freq_to_value(count);
             if (it != 0)
             {
-                insert(count[it].pos, it);
+                sudoku[count[it].pos] = it;
                 possible[count[it].pos].reset();
                 res = true;
             }
@@ -99,7 +80,7 @@ namespace sud::sol
             Point point = count[it].pos;
             if (sudoku[point] == 0)
             {
-                insert(point, it);
+                sudoku[point] = it;
                 possible[point].reset();
                 res = true;
             }
@@ -142,18 +123,15 @@ namespace sud::sol
 
     void SimpleSolver::update_possible()
     {
-        for (square_t row = 0; row < SUDOKU_SIZE; row++)
+        for (const Point &pt : PointIterator())
         {
-            for (square_t col = 0; col < SUDOKU_SIZE; col++)
+            if (sudoku[pt] != 0)
             {
-                if (sudoku.get(row, col) == 0)
+                const uint8_t missing = missing_number(pt);
+                if (missing != 0)
                 {
-                    // if there is only one possible number, set it
-                    if (possible[{row, col}].count() == 1)
-                    {
-                        uint8_t num = std::log2(possible[{row, col}].to_ulong());
-                        sudoku.set(row, col, num);
-                    }
+                    possible[pt].reset();
+                    possible[pt] = missing;
                 }
             }
         }
@@ -161,7 +139,13 @@ namespace sud::sol
 
     status_e SimpleSolver::solve()
     {
-        unique_filter();
+        bool inserted_items = true;
+        while (inserted_items)
+        {
+            inserted_items = false;
+            inserted_items |= unique_filter();
+            inserted_items |= basic_solve();
+        }
         return SUCCESS;
     }
 } // namespace sud::sol

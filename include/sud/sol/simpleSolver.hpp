@@ -24,19 +24,14 @@ namespace sud::sol
         bool unique_filter_col();
         bool unique_filter_box();
 
-        
         static uint8_t freq_to_value(const std::array<count_t, SUDOKU_POSSIBLE_NUMBERS> &count);
         void update_freq(const Point &point, std::array<count_t, SUDOKU_POSSIBLE_NUMBERS> &count) const;
 
     public:
         SimpleSolver(Sudoku &sudoku);
 
-        bool basic_solve();
-
         bool unique_filter();
-
         void update_possible();
-
         status_e solve();
     };
 
