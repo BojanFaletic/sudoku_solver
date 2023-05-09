@@ -76,7 +76,7 @@ namespace sud
                 {
                     return SUDOKU_INVALID_VALUE;
                 }
-                (*this)[{row, col}] = value;
+                board[row][col] = value;
                 col++;
             }
 
@@ -275,7 +275,7 @@ namespace sud
     Square square_hidden_t::insert(const Point &point, const Square value)
     {
         std::cout << fmt::format("Inserting {} at ({}, {})\n", value.to_value(), point.row, point.col);
-        assertm(!value, "Trying to insert a value in a non-empty square");
+        assertm(!this->value, "Trying to insert a value in a non-empty square");
         this->value = value;
         return value;
         // todo update possible_board
@@ -305,7 +305,7 @@ namespace sud
                 }
                 else
                 {
-                    os << static_cast<int>(cell) << " ";
+                    os << cell << " ";
                 }
                 j++;
             }
