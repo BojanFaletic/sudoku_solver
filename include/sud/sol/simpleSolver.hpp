@@ -10,8 +10,6 @@ namespace sud::sol
 {
     class SimpleSolver : public Common
     {
-        friend class SimpleSolverTest;
-
     private:
         struct count_t
         {
@@ -32,7 +30,7 @@ namespace sud::sol
 
         bool unique_filter();
         void update_possible();
-        status_e solve();
+        bool solve();
     };
 
 }; // namespace sud::sol

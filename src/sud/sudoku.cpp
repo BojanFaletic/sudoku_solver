@@ -272,6 +272,11 @@ namespace sud
         return {board[point.row][point.col], point};
     }
 
+    bool Sudoku::operator==(const Sudoku &sudoku) const
+    {
+        return board == sudoku.board;
+    }
+
     Square square_hidden_t::insert(const Point &point, const Square value)
     {
         std::cout << fmt::format("Inserting {} at ({}, {})\n", value.to_value(), point.row, point.col);

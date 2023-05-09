@@ -74,6 +74,7 @@ namespace sud
         friend std::ostream &operator<<(std::ostream &os, const Sudoku &sudoku);
 
         // for reading and writing to the sudoku
+        bool operator==(const Sudoku &sudoku) const;
         square_hidden_t operator[](const Point &point);
         Square operator[](const Point &point) const;
     };

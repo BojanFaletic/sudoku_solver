@@ -137,15 +137,17 @@ namespace sud::sol
         }
     }
 
-    status_e SimpleSolver::solve()
+    bool SimpleSolver::solve()
     {
-        bool inserted_items = true;
-        while (inserted_items)
+        bool inserted_items, res = false;
+        do
         {
             inserted_items = false;
             inserted_items |= unique_filter();
             inserted_items |= basic_solve();
-        }
-        return SUCCESS;
+            res |= inserted_items;
+        } while (inserted_items);
+        return res;
     }
+
 } // namespace sud::sol

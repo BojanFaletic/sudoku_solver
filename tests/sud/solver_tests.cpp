@@ -7,78 +7,61 @@
 #include "sud/sol/solver.hpp"
 #include "sud/loader.hpp"
 #include "sud/sol/simpleSolver.hpp"
+#include "sud/sol/mustSolver.hpp"
 #include <bitset>
 #include <fmt/core.h>
-
-namespace sud::sol
-{
-    class SimpleSolverTest : public SimpleSolver
-    {
-    public:
-        using SimpleSolver::find_possible;
-        using SimpleSolver::SimpleSolver;
-
-        using SimpleSolver::unique_filter_box;
-        using SimpleSolver::unique_filter_col;
-        using SimpleSolver::unique_filter_row;
-    };
-
-}
 
 using namespace std;
 using namespace sud;
 using namespace sud::sol;
 
 std::array<std::array<Square, 9>, 9> const puzzle_1 = {
-        {{1, 9, 8, 5, 0, 3, 7, 0, 6},
-         {6, 0, 3, 0, 0, 8, 0, 9, 0},
-         {0, 0, 7, 6, 0, 9, 8, 0, 0},
-         {0, 1, 0, 0, 0, 0, 0, 6, 0},
-         {8, 7, 6, 1, 0, 0, 0, 0, 0},
-         {0, 3, 0, 0, 0, 6, 0, 7, 0},
-         {0, 6, 0, 0, 0, 1, 9, 8, 7},
-         {0, 8, 1, 9, 0, 7, 6, 5, 4},
-         {7, 0, 9, 8, 6, 0, 3, 1, 2}}};
+    {{1, 9, 8, 5, 0, 3, 7, 0, 6},
+     {6, 0, 3, 0, 0, 8, 0, 9, 0},
+     {0, 0, 7, 6, 0, 9, 8, 0, 0},
+     {0, 1, 0, 0, 0, 0, 0, 6, 0},
+     {8, 7, 6, 1, 0, 0, 0, 0, 0},
+     {0, 3, 0, 0, 0, 6, 0, 7, 0},
+     {0, 6, 0, 0, 0, 1, 9, 8, 7},
+     {0, 8, 1, 9, 0, 7, 6, 5, 4},
+     {7, 0, 9, 8, 6, 0, 3, 1, 2}}};
 
-bitset<10> vect2bitset(vector<uint8_t> vect)
-{
-    bitset<10> result{0b0000000000};
-    for (auto &i : vect)
-    {
-        result.set(i);
-    }
-    return result;
-}
-
-vector<uint8_t> bitset2vect(bitset<10> bitset)
-{
-    vector<uint8_t> result;
-    for (int i = 0; i < 10; i++)
-    {
-        if (bitset.test(i))
-        {
-            result.push_back(i);
-        }
-    }
-    return result;
-}
-
-#if 0
-TEST(SimpleSolverTest, find_possible)
+TEST(SimpleSolver, find_possible)
 {
     Sudoku sudoku{TEST_FILE_ABS};
-    SimpleSolverTest solver(sudoku);
+    SimpleSolver solver(sudoku);
     solver.find_possible();
 
-    bitset<10> possible_expected_0_0{vect2bitset({2, 9})};
-    EXPECT_EQ(solver.possible_board[0][0], possible_expected_0_0);
+    vector<Square> possible_expected_0_0{2, 9};
+    EXPECT_EQ(solver.get_possible({0, 0}), possible_expected_0_0);
 }
-#endif
 
-TEST(SimpleSolverTest, check_xy){
+TEST(SimpleSolver, check_xy)
+{
+    Sudoku sudoku{puzzle_1};
+
+    EXPECT_EQ(sudoku[Point(7, 3)], Square(9));
+}
+
+TEST(SimpleSolver, simple_solver)
+{
+    Sudoku sudoku{puzzle_1};
+    Sudoku sudoku2{puzzle_1};
+    
+    SimpleSolver solver(sudoku);
+    EXPECT_EQ(solver.solve(), false);
+
+    EXPECT_EQ(sudoku2, sudoku);
+}
+
+TEST(SimpleSolver, must_solver)
+{
     Sudoku sudoku{puzzle_1};
     
-    EXPECT_EQ(sudoku[Point(7, 3)], 9);
+    MustSolver solver(sudoku);
+    solver.filter_unique();
+
+    EXPECT_EQ(sudoku.is_valid(), true);
 }
 
 #if 0
@@ -140,7 +123,6 @@ TEST(SimpleSolverTest, box_filter)
 }
 #endif
 
-
 #if 0
 TEST(SimpleSolverTest, solve_full_simple)
 {
@@ -169,7 +151,6 @@ TEST(SimpleSolverTest, solve_full_simple)
     EXPECT_EQ(sudoku.is_solved(), true);
 }
 #endif
-
 
 #if 0
 TEST(SimpleSolverTest, solve_full_normal)

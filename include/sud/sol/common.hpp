@@ -17,7 +17,7 @@ namespace sud::sol
         bool is_number_possible_box(const Point &point, const Square value) const;
 
         // search strategy for each of the square
-        using possible_array_t = std::array<possible_t, SUDOKU_SIZE>;
+        using possible_array_t = std::array<CustomPossible, SUDOKU_SIZE>;
 
         possible_array_t row_wise_possible();
         possible_array_t col_wise_possible();
