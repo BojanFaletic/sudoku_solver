@@ -89,43 +89,39 @@ namespace sud::sol
 
     void MustSolver::filter_unique()
     {
-        // check if the number must be in a row
-        for (uint8_t row = 0; row < SUDOKU_SIZE; row++)
+        for (const Point &point : PointIterator())
         {
-            for (uint8_t col = 0; col < SUDOKU_SIZE; col++)
+            if (sudoku[point] != 0)
             {
+                continue;
+            }
 
-                if (sudoku[{row, col}] != 0)
-                {
-                    continue;
-                }
+            // break at (3,5)
+            if (point.row == 3 && point.col == 5)
+            {
+                std::cout << "break\n";
+                print_possible(point);
+            }
 
-                // break at (3,5)
-                if (row == 3 && col == 5)
+            for (uint8_t number = 1; number < SUDOKU_POSSIBLE_NUMBERS; number++)
+            {
+                if (possible[point][number])
                 {
-                    std::cout << "break\n";
-                }
+                    bool is_outside_row = is_number_possible_outside_box_row(point, number);
+                    bool is_outside_col = is_number_possible_outside_box_col(point, number);
 
-                for (uint8_t number = 1; number < SUDOKU_POSSIBLE_NUMBERS; number++)
-                {
-                    if (possible[{row, col}][number])
+                    if (!is_outside_row)
                     {
-                        bool is_outside_row = is_number_possible_outside_box_row({row, col}, number);
-                        bool is_outside_col = is_number_possible_outside_box_col({row, col}, number);
+                        // number must be in the row
+                        // remove it from the other boxes in the row
+                        remove_possible_candidate_inside_box_row(point, number);
+                    }
 
-                        if (!is_outside_row)
-                        {
-                            // number must be in the row
-                            // remove it from the other boxes in the row
-                            remove_possible_candidate_inside_box_row({row, col}, number);
-                        }
-
-                        if (!is_outside_col)
-                        {
-                            // number must be in the col
-                            // remove it from the other boxes in the col
-                            remove_possible_candidate_inside_box_col({row, col}, number);
-                        }
+                    if (!is_outside_col)
+                    {
+                        // number must be in the col
+                        // remove it from the other boxes in the col
+                        remove_possible_candidate_inside_box_col(point, number);
                     }
                 }
             }

@@ -1,5 +1,6 @@
 #include "sud/sol/common.hpp"
 #include <iostream>
+#include <fmt/format.h>
 
 namespace sud::sol
 {
@@ -20,6 +21,12 @@ namespace sud::sol
         }
         return possible;
     }
+
+    void Common::print_possible(const Point &point) const{
+        const std::vector<Square> p = get_possible(point);
+        std::cout << fmt::format("Possible: {}\n", fmt::join(p, ",")); 
+    }
+
 
     bool Common::is_number_possible_row(const Point &point, const Square value) const
     {

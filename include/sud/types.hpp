@@ -111,7 +111,7 @@ struct fmt::formatter<sud::Point>
     }
 
     template <typename FormatContext>
-    auto format(const sud::Point &p, FormatContext &ctx)
+    auto format(const sud::Point &p, FormatContext &ctx) const
     {
         return format_to(ctx.out(), "({}, {})", p.row, p.col);
     }

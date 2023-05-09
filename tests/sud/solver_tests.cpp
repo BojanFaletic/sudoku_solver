@@ -58,6 +58,8 @@ TEST(SimpleSolver, must_solver)
 {
     Sudoku sudoku{puzzle_1};
     
+    cout << "Original:" << endl;
+    cout << sudoku << endl;
     MustSolver solver(sudoku);
     solver.filter_unique();
 

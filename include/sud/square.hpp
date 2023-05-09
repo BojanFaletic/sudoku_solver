@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <ostream>
+#include <fmt/format.h>
 
 namespace sud
 {
@@ -27,3 +28,20 @@ namespace sud
     };
 
 } // namespace sud
+
+namespace fmt
+{
+    template <>
+    struct formatter<sud::Square>
+    {
+        template <typename ParseContext>
+        constexpr auto parse(ParseContext &ctx) { return ctx.begin(); }
+
+        template <typename FormatContext>
+        auto format(const sud::Square &square, FormatContext &ctx) const
+        {
+            return fmt::format_to(ctx.out(), "{}",
+                                  static_cast<int>(square.to_value()));
+        }
+    };
+}

@@ -35,6 +35,7 @@ namespace sud::sol
         uint8_t missing_number(const Point &point);
         bool is_number_possible(const Point &point, const Square value) const;
         std::vector<Square> get_possible(const Point &point) const;
+        void print_possible(const Point &point) const;
     };
 
 }
