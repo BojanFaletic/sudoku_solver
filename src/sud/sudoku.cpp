@@ -8,6 +8,7 @@
 #include <iostream>
 #include <fmt/format.h>
 #include "sud/sudoku.hpp"
+#include "sud/types.hpp"
 
 using namespace boost;
 using namespace std;
@@ -71,12 +72,12 @@ namespace sud
                 {
                     continue;
                 }
-                Square value = stoi(token);
-                if (value >= SUDOKU_POSSIBLE_NUMBERS)
+                const Square square = stoi(token);
+                if (square.to_value() >= SUDOKU_POSSIBLE_NUMBERS)
                 {
                     return SUDOKU_INVALID_VALUE;
                 }
-                board[row][col] = value;
+                board[row][col] = square;
                 col++;
             }
 

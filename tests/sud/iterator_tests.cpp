@@ -3,12 +3,12 @@
 #include <iostream>
 #include <gtest/gtest.h>
 
-#include "Sudoku.hpp"
-#include "Solver.hpp"
-#include "Loader.hpp"
+#include "sud/types.hpp"
+#include "sud/sudoku.hpp"
+#include "sud/sol/solver.hpp"
+#include "sud/loader.hpp"
 #include <bitset>
 #include <fmt/core.h>
-#include "types.hpp"
 
 using namespace std;
 using namespace sud;
