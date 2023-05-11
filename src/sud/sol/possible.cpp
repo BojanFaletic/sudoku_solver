@@ -1,14 +1,11 @@
 #include "sud/sol/possible.hpp"
 
+
 namespace sud::sol
 {
     /* ------------------------------------------------ */
     /* ------------------ Possible ------------------- */
     /* ------------------------------------------------ */
-
-    Possible::Possible(Sudoku &sudoku) : sudoku(sudoku)
-    {
-    }
 
     CustomPossible Possible::operator[](const Point &p)
     {

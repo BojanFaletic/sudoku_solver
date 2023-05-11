@@ -1,5 +1,6 @@
 #include "sud/sol/mustSolver.hpp"
 #include <iostream>
+#include <algorithm>
 
 namespace sud::sol
 {
@@ -21,7 +22,7 @@ namespace sud::sol
             {
                 continue;
             }
-            if (is_number_possible({row, point.col}, value))
+            if (possible[{row, point.col}].test(value))
             {
                 return true;
             }
@@ -38,7 +39,7 @@ namespace sud::sol
             {
                 continue;
             }
-            if (is_number_possible({point.row, col}, value))
+            if (possible[{point.row, col}].test(value))
             {
                 return true;
             }
@@ -49,41 +50,28 @@ namespace sud::sol
     void MustSolver::remove_possible_candidate_inside_box_row(const Point &point, const Square value)
     {
         const Point block = point / SUDOKU_BOX_SIZE * SUDOKU_BOX_SIZE;
+        std::vector<uint8_t> col_iterator{0, 1, 2};
+        col_iterator.erase(col_iterator.begin() + point.col % 3);
 
-        std::cout << fmt::format("remove_possible_candidate_inside_box_row: point: {}, value: {}\n", block, value);
         for (uint8_t row = block.row; row < block.row + SUDOKU_BOX_SIZE; row++)
         {
-            for (uint8_t col = block.col; col < block.col + SUDOKU_BOX_SIZE; col++)
-            {
-                if (row == point.row)
-                {
-                    continue;
-                }
-                if (possible[{row, col}][value.to_value()])
-                {
-                    std::cout << fmt::format("remove_possible_candidate_inside_box_row: point: {}, value: {}\n", Point(row, col), value);
-                }
-
-                possible[{row, col}][value.to_value()] = false;
-            }
+            std::for_each(col_iterator.begin(), col_iterator.end(), [&](uint8_t &col) {
+                possible[{row, col}][value] = false;
+            });
         }
     }
 
     void MustSolver::remove_possible_candidate_inside_box_col(const Point &point, const Square value)
     {
         const Point block = point / SUDOKU_BOX_SIZE * SUDOKU_BOX_SIZE;
+        std::vector<uint8_t> row_iterator{0, 1, 2};
+        row_iterator.erase(row_iterator.begin() + point.row % 3);
 
-        std::cout << fmt::format("remove_possible_candidate_inside_box_col: point: {}, value: {}\n", block, value);
-        for (uint8_t row = block.row; row < block.row + SUDOKU_BOX_SIZE; row++)
+        for (uint8_t col = block.col; col < block.col + SUDOKU_BOX_SIZE; col++)
         {
-            for (uint8_t col = block.col; col < block.col + SUDOKU_BOX_SIZE; col++)
-            {
-                if (col == point.col)
-                {
-                    continue;
-                }
+            std::for_each(row_iterator.begin(), row_iterator.end(), [&](uint8_t &row) {
                 possible[{row, col}][value] = false;
-            }
+            });
         }
     }
 
@@ -93,7 +81,7 @@ namespace sud::sol
         {
             std::cout << fmt::format("filter_unique: point: {}\n", point);
 
-            if (!sudoku[point])
+            if (sudoku[point])
             {
                 continue;
             }
@@ -104,7 +92,6 @@ namespace sud::sol
                 std::cout << "break\n";
                 print_possible(point);
                 print_possible({8, 5});
-                
             }
 
             const std::vector<Square> possible_numbers = get_possible(point);
@@ -113,13 +100,14 @@ namespace sud::sol
                 bool is_unique_in_row = is_number_possible_outside_box_row(point, number);
                 bool is_unique_in_col = is_number_possible_outside_box_col(point, number);
 
-                if (is_unique_in_row || is_unique_in_col)
+                if (is_unique_in_row)
                 {
-                    sudoku[point] = number;
-                    std::cout << fmt::format("filter_unique: point: {}, value: {}\n", point, number);
-                    print_possible(point);
-                    print_possible({8, 5});
-                    //return;
+                    remove_possible_candidate_inside_box_row(point, number);
+                }
+
+                if (is_unique_in_col)
+                {
+                    remove_possible_candidate_inside_box_col(point, number);
                 }
             }
         }

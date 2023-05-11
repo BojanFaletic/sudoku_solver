@@ -34,7 +34,7 @@ namespace sud
 
         operator bool() const
         {
-            return value;
+            return value.to_value() == 0;
         }
     };
 

@@ -8,7 +8,7 @@ namespace sud::sol
 {
     class MustSolver : public Common
     {
-    private:        
+    public:
         // used for detecting unique numbers
         bool is_number_possible_outside_box_row(const Point &point, const Square value) const;
         bool is_number_possible_outside_box_col(const Point &point, const Square value) const;

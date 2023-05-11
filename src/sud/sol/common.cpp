@@ -4,7 +4,7 @@
 
 namespace sud::sol
 {
-    Common::Common(Sudoku &sudoku) : sudoku(sudoku), possible(sudoku)
+    Common::Common(Sudoku &sudoku) : sudoku(sudoku)
     {
         find_possible();
     }
@@ -25,7 +25,7 @@ namespace sud::sol
 
     void Common::print_possible(const Point &point) const{
         const std::vector<Square> p = get_possible(point);
-        std::cout << fmt::format("Possible: {}\n", fmt::join(p, ",")); 
+        std::cout << fmt::format("Possible: {}\n", fmt::join(p, ","));
     }
 
 
@@ -153,12 +153,11 @@ namespace sud::sol
         {
             const uint8_t box_idx = (point.row / SUDOKU_BOX_SIZE) * SUDOKU_BOX_SIZE + point.col / SUDOKU_BOX_SIZE;
             possible[point] = row_wise[point.row] & col_wise[point.col] & box_wise[box_idx];
-
-            if (sudoku[point])
-            {
-                possible[point].reset();
-            }
+            possible[point] &= !sudoku[point];
         }
+
+        std::cout << "Hereeeee:\n";
+        std::cout << fmt::format("Possible: {}\n", possible[{0, 0}]);
     }
 
     bool Common::basic_solve()

@@ -47,17 +47,31 @@ TEST(SimpleSolver, simple_solver)
 {
     Sudoku sudoku{puzzle_1};
     Sudoku sudoku2{puzzle_1};
-    
+
     SimpleSolver solver(sudoku);
     EXPECT_EQ(solver.solve(), false);
 
     EXPECT_EQ(sudoku2, sudoku);
 }
 
+TEST(SimpleSolver, simple)
+{
+    Sudoku sudoku{puzzle_1};
+
+    cout << "Original:" << endl;
+    cout << sudoku << endl;
+    MustSolver must(sudoku);
+
+    const auto possible = must.get_possible({0, 4});
+    const auto expected = vector<Square>{2, 4};
+    EXPECT_EQ(must.get_possible({0, 4}), expected);
+    EXPECT_EQ(must.is_number_possible_outside_box_row({3, 5}, 2), false);
+}
+
 TEST(SimpleSolver, must_solver)
 {
     Sudoku sudoku{puzzle_1};
-    
+
     cout << "Original:" << endl;
     cout << sudoku << endl;
     MustSolver solver(sudoku);
