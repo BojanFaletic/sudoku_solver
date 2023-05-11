@@ -104,7 +104,7 @@ namespace sud::sol
     {
         for (uint8_t i = 1; i < SUDOKU_POSSIBLE_NUMBERS; i++)
         {
-            if (possible[point][i])
+            if (possible[point].test(i))
             {
                 count[i].freq++;
                 count[i].pos = point;

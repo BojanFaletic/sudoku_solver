@@ -155,9 +155,6 @@ namespace sud::sol
             possible[point] = row_wise[point.row] & col_wise[point.col] & box_wise[box_idx];
             possible[point] &= !sudoku[point];
         }
-
-        std::cout << "Hereeeee:\n";
-        std::cout << fmt::format("Possible: {}\n", possible[{0, 0}]);
     }
 
     bool Common::basic_solve()
