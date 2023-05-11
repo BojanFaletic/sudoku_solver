@@ -91,7 +91,9 @@ namespace sud::sol
     {
         for (const Point &point : PointIterator())
         {
-            if (sudoku[point] != 0)
+            std::cout << fmt::format("filter_unique: point: {}\n", point);
+
+            if (!sudoku[point])
             {
                 continue;
             }
@@ -101,28 +103,23 @@ namespace sud::sol
             {
                 std::cout << "break\n";
                 print_possible(point);
+                print_possible({8, 5});
+                
             }
 
-            for (uint8_t number = 1; number < SUDOKU_POSSIBLE_NUMBERS; number++)
+            const std::vector<Square> possible_numbers = get_possible(point);
+            for (const Square &number : possible_numbers)
             {
-                if (possible[point][number])
+                bool is_unique_in_row = is_number_possible_outside_box_row(point, number);
+                bool is_unique_in_col = is_number_possible_outside_box_col(point, number);
+
+                if (is_unique_in_row || is_unique_in_col)
                 {
-                    bool is_outside_row = is_number_possible_outside_box_row(point, number);
-                    bool is_outside_col = is_number_possible_outside_box_col(point, number);
-
-                    if (!is_outside_row)
-                    {
-                        // number must be in the row
-                        // remove it from the other boxes in the row
-                        remove_possible_candidate_inside_box_row(point, number);
-                    }
-
-                    if (!is_outside_col)
-                    {
-                        // number must be in the col
-                        // remove it from the other boxes in the col
-                        remove_possible_candidate_inside_box_col(point, number);
-                    }
+                    sudoku[point] = number;
+                    std::cout << fmt::format("filter_unique: point: {}, value: {}\n", point, number);
+                    print_possible(point);
+                    print_possible({8, 5});
+                    //return;
                 }
             }
         }

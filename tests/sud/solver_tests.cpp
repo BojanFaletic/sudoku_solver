@@ -63,6 +63,7 @@ TEST(SimpleSolver, must_solver)
     MustSolver solver(sudoku);
     solver.filter_unique();
 
+    EXPECT_EQ(solver.get_possible({5, 3}), vector<Square>{4});
     EXPECT_EQ(sudoku.is_valid(), true);
 }
 

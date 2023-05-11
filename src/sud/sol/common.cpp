@@ -6,6 +6,7 @@ namespace sud::sol
 {
     Common::Common(Sudoku &sudoku) : sudoku(sudoku), possible(sudoku)
     {
+        find_possible();
     }
 
     std::vector<Square> Common::get_possible(const Point &point) const
