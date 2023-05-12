@@ -1,5 +1,7 @@
 #include "sud/sol/possible.hpp"
 
+#define USE_DGB_POSSIBLE 0
+
 namespace sud::sol
 {
     /* ------------------------------------------------ */
@@ -25,7 +27,8 @@ namespace sud::sol
 
     CustomPossible Possible::operator[](const Point &p) const
     {
-        const CustomPossible possible = {p, possible_board[p.row][p.col]};
+        const possible_t pt = possible_board[p.row][p.col];
+        const CustomPossible possible = {p, pt};
         return possible;
     }
 
@@ -43,6 +46,7 @@ namespace sud::sol
 
     void CustomPossible::dbg_write(const possible_t &other) const
     {
+#if USE_DGB_POSSIBLE
         std::set<uint8_t> prev;
         std::set<uint8_t> other_set;
 
@@ -60,6 +64,7 @@ namespace sud::sol
 
         std::cout << fmt::format("Possible {} : {} --> {}\n",
                                  pt, fmt::join(prev, ", "), fmt::join(other_set, ", "));
+#endif
     }
 
     possible_t &CustomPossible::get() const
@@ -72,9 +77,9 @@ namespace sud::sol
         possible.reset();
     }
 
-    bool CustomPossible::test(const uint8_t &index) const
+    bool CustomPossible::test(const Square &index) const
     {
-        return possible.test(index);
+        return possible.test(index.to_value());
     }
 
     possible_t::reference CustomPossible::operator[](const uint8_t &index)

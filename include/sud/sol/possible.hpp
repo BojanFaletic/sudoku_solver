@@ -19,12 +19,14 @@ namespace sud::sol
 
     public:
         CustomPossible() = delete;
+
+
         CustomPossible(const Point &pt, possible_t &possible);
         CustomPossible(const Point &pt, const possible_t &possible);
 
         possible_t &get() const;
         void reset();
-        bool test(const uint8_t &index) const;
+        bool test(const Square &index) const;
         uint8_t count() const;
 
         possible_t::reference operator[](const uint8_t &index);

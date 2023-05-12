@@ -22,7 +22,8 @@ namespace sud::sol
             {
                 continue;
             }
-            if (possible[{row, point.col}].test(value))
+            bool is_possible = possible[{row, point.col}].test(value);
+            if (is_possible)
             {
                 return true;
             }
@@ -39,7 +40,9 @@ namespace sud::sol
             {
                 continue;
             }
-            if (possible[{point.row, col}].test(value))
+            auto ps = possible[{point.row, col}];
+            bool is_possible = ps.test(value);
+            if (is_possible)
             {
                 return true;
             }
@@ -97,15 +100,15 @@ namespace sud::sol
             const std::vector<Square> possible_numbers = get_possible(point);
             for (const Square &number : possible_numbers)
             {
-                bool is_unique_in_row = is_number_possible_outside_box_row(point, number);
-                bool is_unique_in_col = is_number_possible_outside_box_col(point, number);
+                bool can_be_outside_row = is_number_possible_outside_box_row(point, number);
+                bool can_be_outside_col = is_number_possible_outside_box_col(point, number);
 
-                if (is_unique_in_row)
+                if (!can_be_outside_row)
                 {
                     remove_possible_candidate_inside_box_row(point, number);
                 }
 
-                if (is_unique_in_col)
+                if (!can_be_outside_col)
                 {
                     remove_possible_candidate_inside_box_col(point, number);
                 }
