@@ -90,9 +90,8 @@ TEST(SimpleSolver, simple)
     const auto possible = must.get_possible({0, 4});
     const auto expected = vector<Square>{2, 4};
     EXPECT_EQ(must.get_possible({0, 4}), expected);
-    EXPECT_EQ(must.is_number_possible_outside_box_row({3, 5}, 2), false); // fix this
-    EXPECT_EQ(must.is_number_possible_outside_box_col({3, 5}, 2), true);
-
+    ASSERT_TRUE(must.is_number_possible_outside_box_row({3, 5}, 2) == false);
+    ASSERT_TRUE(must.is_number_possible_outside_box_col({3, 5}, 2) == false);
 }
 
 TEST(SimpleSolver, must_solver)
