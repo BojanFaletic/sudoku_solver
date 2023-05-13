@@ -32,8 +32,11 @@ TEST(SimpleSolver, find_possible)
     SimpleSolver solver(sudoku);
     solver.find_possible();
 
+	std::cout << "Original" << std::endl;
+	std::cout << sudoku << std::endl;
+
     vector<Square> possible_expected_0_0{2, 9};
-    EXPECT_EQ(solver.get_possible({0, 0}), possible_expected_0_0);
+    EXPECT_EQ(solver.get_possible_from_sudoku({0, 0}), possible_expected_0_0);
 }
 
 TEST(SimpleSolver, check_xy)
@@ -61,7 +64,7 @@ TEST(SimpleSolver, test_fn)
     cout << sudoku << endl;
     MustSolver must(sudoku);
 
-    must.print_possible({0, 4});
+    must.print_possible_from_possible({0, 4});
 
     // fix
     bool test = must.possible[{0, 4}].test(1) == false;
@@ -87,9 +90,9 @@ TEST(SimpleSolver, simple)
     cout << sudoku << endl;
     MustSolver must(sudoku);
 
-    const auto possible = must.get_possible({0, 4});
+    const auto possible = must.get_possible_from_possible({0, 4});
     const auto expected = vector<Square>{2, 4};
-    EXPECT_EQ(must.get_possible({0, 4}), expected);
+    EXPECT_EQ(must.get_possible_from_possible({0, 4}), expected);
 
     const bool tst = must.is_number_possible_outside_box_row({3, 5}, 2);
     std::cout << "tst: " << tst << std::endl;
@@ -115,13 +118,8 @@ TEST(SimpleSolver, must_solver_pre)
     solver.remove_possible_candidate_inside_box_row(point, number);
 
     // check that the number is not possible in the box
-    auto possibe = solver.get_possible(point);
-    ASSERT_FALSE((std::find(possibe.begin(), possibe.end(), Square(number)) != possibe.end()));
-
-    solver.filter_unique();
-
-    EXPECT_EQ(solver.get_possible({5, 3}), vector<Square>{4});
-    EXPECT_EQ(sudoku.is_valid(), true);
+    auto possibe = solver.get_possible_from_possible({5,3});
+    ASSERT_EQ(possibe, vector<Square>{4});
 }
 
 TEST(SimpleSolver, must_solver)
@@ -133,7 +131,7 @@ TEST(SimpleSolver, must_solver)
     MustSolver solver(sudoku);
     solver.filter_unique();
 
-    EXPECT_EQ(solver.get_possible({5, 3}), vector<Square>{4});
+    EXPECT_EQ(solver.get_possible_from_possible({5, 3}), vector<Square>{4});
     EXPECT_EQ(sudoku.is_valid(), true);
 }
 

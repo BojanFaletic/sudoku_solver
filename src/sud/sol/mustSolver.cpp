@@ -18,7 +18,7 @@ namespace sud::sol
         const Point block = point / SUDOKU_BOX_SIZE * SUDOKU_BOX_SIZE;
         for (uint8_t row = 0; row < SUDOKU_SIZE; row++)
         {
-			// is inside box
+            // is inside box
             if (row >= block.row && row < block.row + SUDOKU_BOX_SIZE)
             {
                 continue;
@@ -85,27 +85,16 @@ namespace sud::sol
     {
         for (const Point &point : PointIterator())
         {
-            //std::cout << fmt::format("filter_unique: point: {}\n", point);
-
             if (sudoku[point])
             {
                 continue;
             }
 
-            // break at (3,5)
-            if (point.row == 3 && point.col == 5)
-            {
-                std::cout << "break\n";
-                print_possible(point);
-                print_possible({8, 5});
-            }
-
-            const std::vector<Square> possible_numbers = get_possible(point);
+            const std::vector<Square> possible_numbers = get_possible_from_possible(point);
             for (const Square &number : possible_numbers)
             {
                 bool can_be_outside_row = is_number_possible_outside_box_row(point, number);
                 bool can_be_outside_col = is_number_possible_outside_box_col(point, number);
-                //std::cout << fmt::format("filter_unique: point: {}, number: {}, can_be_outside_row: {}, can_be_outside_col: {}\n", point, number, can_be_outside_row, can_be_outside_col);
 
                 if (!can_be_outside_row)
                 {
