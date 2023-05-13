@@ -25,6 +25,7 @@ namespace sud::sol
             filter_unique();
             cont |= sync_possible_to_sudoku();
             cont |= basic_solve();
+            find_possible();
             changed |= cont;
         }
         return changed;

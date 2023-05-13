@@ -26,14 +26,25 @@ std::array<std::array<Square, 9>, 9> const puzzle_1 = {
      {0, 8, 1, 9, 0, 7, 6, 5, 4},
      {7, 0, 9, 8, 6, 0, 3, 1, 2}}};
 
+std::array<std::array<Square, 9>, 9> const puzzle_2 = {
+    {{1, 9, 8, 5, 0, 3, 7, 0, 6},
+     {6, 0, 3, 0, 0, 8, 0, 9, 0},
+     {0, 0, 7, 6, 0, 9, 8, 0, 0},
+     {0, 1, 0, 0, 0, 0, 0, 6, 0},
+     {8, 7, 6, 1, 0, 0, 0, 0, 0},
+     {0, 3, 0, 4, 0, 6, 0, 7, 0},
+     {0, 6, 0, 0, 0, 1, 9, 8, 7},
+     {0, 8, 1, 9, 0, 7, 6, 5, 4},
+     {7, 0, 9, 8, 6, 0, 3, 1, 2}}};
+
 TEST(SimpleSolver, find_possible)
 {
     Sudoku sudoku{TEST_FILE_ABS};
     SimpleSolver solver(sudoku);
     solver.find_possible();
 
-	std::cout << "Original" << std::endl;
-	std::cout << sudoku << std::endl;
+    std::cout << "Original" << std::endl;
+    std::cout << sudoku << std::endl;
 
     vector<Square> possible_expected_0_0{2, 9};
     EXPECT_EQ(solver.get_possible_from_sudoku({0, 0}), possible_expected_0_0);
@@ -79,7 +90,7 @@ TEST(SimpleSolver, test_fn)
     test = must.possible[{0, 4}].test(3) == false;
     EXPECT_EQ(test, true);
 
-    //EXPECT_EQ(must.possible[{3, 0}].test(2) == true, true);
+    // EXPECT_EQ(must.possible[{3, 0}].test(2) == true, true);
 }
 
 TEST(SimpleSolver, simple)
@@ -114,13 +125,11 @@ TEST(SimpleSolver, must_solver_pre)
     bool can_be_outside_row = solver.is_number_possible_outside_box_row(point, number);
     ASSERT_FALSE(can_be_outside_row);
 
-
     solver.remove_possible_candidate_inside_box_row(point, number);
 
     // check that the number is not possible in the box
-    auto possibe = solver.get_possible_from_possible({5,3});
+    auto possibe = solver.get_possible_from_possible({5, 3});
     ASSERT_EQ(possibe, vector<Square>{4});
-
 
     point = {4, 7};
     number = 4;
@@ -151,14 +160,36 @@ TEST(SimpleSolver, set_possible)
     ASSERT_TRUE((possible[{0, 0}][1] == false));
 }
 
-TEST(MustSolver, must_solve){
+TEST(MustSolver, must_solve)
+{
     Sudoku sudoku{puzzle_1};
 
     cout << "Original:" << endl;
     cout << sudoku << endl;
     MustSolver solver(sudoku);
-    solver.single_solve();
+    solver.solve();
 
+    cout << "Solved:" << endl;
+    cout << sudoku << endl;
+    EXPECT_EQ(sudoku.is_valid(), true);
+}
+
+TEST(MustSolver, must_solve_2)
+{
+    Sudoku sudoku{puzzle_2};
+
+    cout << "Original:" << endl;
+    cout << sudoku << endl;
+
+    SimpleSolver solver(sudoku);
+    solver.solve();
+
+    #if 0
+    MustSolver solver(sudoku);
+
+    bool sol = solver.is_number_possible_outside_box_row({8, 5}, 4);
+    ASSERT_FALSE(sol);
+    #endif
     cout << "Solved:" << endl;
     cout << sudoku << endl;
     EXPECT_EQ(sudoku.is_valid(), true);
