@@ -40,9 +40,9 @@ namespace sud
         return value != other.value;
     }
 
-    Square::operator bool() const
+    Square::operator uint8_t() const
     {
-        return value != 0;
+        return value;
     }
 
     std::ostream &operator<<(std::ostream &os, const Square &square)

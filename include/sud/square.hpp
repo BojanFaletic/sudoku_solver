@@ -24,7 +24,7 @@ namespace sud
         bool operator==(const Square &other) const;
         bool operator!=(const Square &other) const;
         friend std::ostream &operator<<(std::ostream &os, const Square &square);
-        operator bool() const;
+        operator uint8_t() const;
     };
 
 } // namespace sud

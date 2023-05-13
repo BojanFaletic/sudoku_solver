@@ -90,8 +90,12 @@ TEST(SimpleSolver, simple)
     const auto possible = must.get_possible({0, 4});
     const auto expected = vector<Square>{2, 4};
     EXPECT_EQ(must.get_possible({0, 4}), expected);
-    ASSERT_TRUE(must.is_number_possible_outside_box_row({3, 5}, 2) == false);
-    ASSERT_TRUE(must.is_number_possible_outside_box_col({3, 5}, 2) == false);
+
+    const bool tst = must.is_number_possible_outside_box_row({3, 5}, 2);
+    std::cout << "tst: " << tst << std::endl;
+
+    ASSERT_FALSE(tst);
+    ASSERT_TRUE(must.is_number_possible_outside_box_col({3, 5}, 2) == true);
 }
 
 TEST(SimpleSolver, must_solver)
@@ -105,6 +109,16 @@ TEST(SimpleSolver, must_solver)
 
     EXPECT_EQ(solver.get_possible({5, 3}), vector<Square>{4});
     EXPECT_EQ(sudoku.is_valid(), true);
+}
+
+TEST(SimpleSolver, set_possible)
+{
+    Possible possible;
+    possible[{0, 0}][1] = true;
+    ASSERT_TRUE((possible[{0, 0}][1] == true));
+
+    possible[{0, 0}][1] = false;
+    ASSERT_TRUE((possible[{0, 0}][1] == false));
 }
 
 #if 0
