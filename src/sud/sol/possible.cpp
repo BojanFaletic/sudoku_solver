@@ -27,8 +27,7 @@ namespace sud::sol
 
     CustomPossible Possible::operator[](const Point &p) const
     {
-        const possible_t pt = possible_board[p.row][p.col];
-        const CustomPossible possible = {p, pt};
+        const CustomPossible possible = {p, possible_board[p.row][p.col]};
         return possible;
     }
 

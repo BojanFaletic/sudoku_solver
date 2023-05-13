@@ -98,6 +98,32 @@ TEST(SimpleSolver, simple)
     ASSERT_TRUE(must.is_number_possible_outside_box_col({3, 5}, 2) == true);
 }
 
+TEST(SimpleSolver, must_solver_pre)
+{
+    Sudoku sudoku{puzzle_1};
+
+    cout << "Original:" << endl;
+    cout << sudoku << endl;
+    MustSolver solver(sudoku);
+
+    Point point{3, 5};
+    int number = 2;
+    bool can_be_outside_row = solver.is_number_possible_outside_box_row(point, number);
+    ASSERT_FALSE(can_be_outside_row);
+
+
+    solver.remove_possible_candidate_inside_box_row(point, number);
+
+    // check that the number is not possible in the box
+    auto possibe = solver.get_possible(point);
+    ASSERT_FALSE((std::find(possibe.begin(), possibe.end(), Square(number)) != possibe.end()));
+
+    solver.filter_unique();
+
+    EXPECT_EQ(solver.get_possible({5, 3}), vector<Square>{4});
+    EXPECT_EQ(sudoku.is_valid(), true);
+}
+
 TEST(SimpleSolver, must_solver)
 {
     Sudoku sudoku{puzzle_1};
