@@ -38,6 +38,7 @@ namespace sud::sol
 		std::vector<Square> get_possible_from_possible(const Point& point) const;
         void print_possible_from_sudoku(const Point &point) const;
         void print_possible_from_possible(const Point& point) const;
+        bool sync_possible_to_sudoku();
     };
 
 }

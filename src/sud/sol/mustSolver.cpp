@@ -8,9 +8,26 @@ namespace sud::sol
     {
     }
 
+    bool MustSolver::single_solve()
+    {
+        filter_unique();
+        return sync_possible_to_sudoku();
+    }
+
     bool MustSolver::solve()
     {
-        return false;
+        bool changed = false;
+        bool cont = true;
+
+        while (cont)
+        {
+            cont = false;
+            filter_unique();
+            cont |= sync_possible_to_sudoku();
+            cont |= basic_solve();
+            changed |= cont;
+        }
+        return changed;
     }
 
     bool MustSolver::is_number_possible_outside_box_row(const Point &point, const Square value) const
@@ -49,7 +66,7 @@ namespace sud::sol
         return false;
     }
 
-    void MustSolver::remove_possible_candidate_inside_box_row(const Point &point, const Square value)
+    void MustSolver::remove_possible_candidate_inside_box_col(const Point &point, const Square value)
     {
         const Point block = point / SUDOKU_BOX_SIZE * SUDOKU_BOX_SIZE;
         for (uint8_t row = block.row; row < block.row + SUDOKU_BOX_SIZE; row++)
@@ -65,7 +82,7 @@ namespace sud::sol
         }
     }
 
-    void MustSolver::remove_possible_candidate_inside_box_col(const Point &point, const Square value)
+    void MustSolver::remove_possible_candidate_inside_box_row(const Point &point, const Square value)
     {
         const Point block = point / SUDOKU_BOX_SIZE * SUDOKU_BOX_SIZE;
         for (uint8_t col = block.col; col < block.col + SUDOKU_BOX_SIZE; col++)
@@ -85,9 +102,33 @@ namespace sud::sol
     {
         for (const Point &point : PointIterator())
         {
+            if (point == Point(3,5))
+            {
+                int avv = 0;
+            }
+
             if (sudoku[point])
             {
                 continue;
+            }
+
+
+
+            if (point == Point{4, 6})
+            {
+                int ayy = 0;
+            }
+
+            if (possible[{4, 7}].count() == 1)
+            {
+               int b;
+            }
+
+            // 4,7
+            if (point == Point{4, 7})
+            {
+                int a = 0;
+                auto possible_numbers = get_possible_from_possible(point);
             }
 
             const std::vector<Square> possible_numbers = get_possible_from_possible(point);

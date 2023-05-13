@@ -120,6 +120,12 @@ TEST(SimpleSolver, must_solver_pre)
     // check that the number is not possible in the box
     auto possibe = solver.get_possible_from_possible({5,3});
     ASSERT_EQ(possibe, vector<Square>{4});
+
+
+    point = {4, 7};
+    number = 4;
+    can_be_outside_row = solver.is_number_possible_outside_box_row(point, number);
+    ASSERT_TRUE(can_be_outside_row);
 }
 
 TEST(SimpleSolver, must_solver)
@@ -143,6 +149,19 @@ TEST(SimpleSolver, set_possible)
 
     possible[{0, 0}][1] = false;
     ASSERT_TRUE((possible[{0, 0}][1] == false));
+}
+
+TEST(MustSolver, must_solve){
+    Sudoku sudoku{puzzle_1};
+
+    cout << "Original:" << endl;
+    cout << sudoku << endl;
+    MustSolver solver(sudoku);
+    solver.single_solve();
+
+    cout << "Solved:" << endl;
+    cout << sudoku << endl;
+    EXPECT_EQ(sudoku.is_valid(), true);
 }
 
 #if 0

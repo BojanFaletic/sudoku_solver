@@ -23,13 +23,13 @@ namespace sud::sol
         return possible;
     }
 
-    std::vector<Square> Common::get_possible_from_possible(const Point& point) const
+    std::vector<Square> Common::get_possible_from_possible(const Point &point) const
     {
         std::vector<Square> possible;
         for (std::uint8_t i = 1; i <= SUDOKU_SIZE; i++)
         {
-            const Square value{ i };
-			if (this->possible[point].test(i))
+            const Square value{i};
+            if (this->possible[point].test(i))
             {
                 possible.push_back(value);
             }
@@ -37,17 +37,35 @@ namespace sud::sol
         return possible;
     }
 
-    void Common::print_possible_from_sudoku(const Point &point) const{
-		const std::vector<Square> p = get_possible_from_sudoku(point);
+    bool Common::sync_possible_to_sudoku()
+    {
+        bool changed = false;
+        for (const Point &pt : PointIterator())
+        {
+            if (sudoku[pt] == 0)
+            {
+                const std::vector<Square> p = get_possible_from_possible(pt);
+                if (p.size() == 1)
+                {
+                    sudoku[pt] = p[0];
+                    changed = true;
+                }
+            }
+        }
+        return changed;
+    }
+
+    void Common::print_possible_from_sudoku(const Point &point) const
+    {
+        const std::vector<Square> p = get_possible_from_sudoku(point);
         std::cout << fmt::format("Possible: {}\n", fmt::join(p, ","));
     }
 
-	void Common::print_possible_from_possible(const Point& point) const
-	{
-		const std::vector<Square> p = get_possible_from_possible(point);
-		std::cout << fmt::format("Possible: {}\n", fmt::join(p, ","));
-	}
-
+    void Common::print_possible_from_possible(const Point &point) const
+    {
+        const std::vector<Square> p = get_possible_from_possible(point);
+        std::cout << fmt::format("Possible: {}\n", fmt::join(p, ","));
+    }
 
     bool Common::is_number_possible_row(const Point &point, const Square value) const
     {
